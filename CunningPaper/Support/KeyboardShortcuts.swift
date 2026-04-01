@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 enum KeyboardShortcuts {
@@ -14,6 +15,39 @@ enum KeyboardShortcuts {
 
         init(_ rawValue: String) {
             self.rawValue = rawValue
+        }
+    }
+
+    struct Shortcut: Equatable {
+        let keyCode: UInt16
+        let modifiers: NSEvent.ModifierFlags
+
+        static func from(_ string: String) -> Shortcut? {
+            let parts = string.split(separator: ",")
+            guard parts.count == 2,
+                  let flagsRaw = UInt(parts[0]),
+                  let code = UInt16(parts[1])
+            else { return nil }
+            return Shortcut(
+                keyCode: code,
+                modifiers: NSEvent.ModifierFlags(rawValue: flagsRaw)
+            )
+        }
+
+        var storageString: String {
+            let cleaned = modifiers.intersection([.command, .option, .shift, .control])
+            return "\(cleaned.rawValue),\(keyCode)"
+        }
+
+        var displayString: String {
+            var s = ""
+            let m = modifiers.intersection([.command, .option, .shift, .control])
+            if m.contains(.control) { s += "⌃" }
+            if m.contains(.option) { s += "⌥" }
+            if m.contains(.shift) { s += "⇧" }
+            if m.contains(.command) { s += "⌘" }
+            s += KeyCodeMap.label(for: keyCode)
+            return s
         }
     }
 
@@ -46,22 +80,258 @@ enum KeyboardShortcuts {
 
     struct Recorder: View {
         let name: Name
-        @State private var value: String = ""
+        @State private var shortcut: Shortcut?
 
         init(for name: Name) {
             self.name = name
         }
 
         var body: some View {
-            TextField("Shortcut", text: $value)
-                .textFieldStyle(.roundedBorder)
-                .font(.system(.body, design: .monospaced))
+            ShortcutRecorderField(shortcut: $shortcut)
+                .frame(height: 28)
                 .onAppear {
-                    value = KeyboardShortcuts.shortcutString(for: name)
+                    shortcut = Shortcut.from(KeyboardShortcuts.shortcutString(for: name))
                 }
-                .onSubmit {
-                    KeyboardShortcuts.setShortcutString(value, for: name)
+                .onChange(of: shortcut) { _, newValue in
+                    if let sc = newValue {
+                        KeyboardShortcuts.setShortcutString(sc.storageString, for: name)
+                    } else {
+                        KeyboardShortcuts.reset(name)
+                    }
                 }
+        }
+    }
+}
+
+// MARK: - ShortcutRecorderField
+
+private struct ShortcutRecorderField: NSViewRepresentable {
+    @Binding var shortcut: KeyboardShortcuts.Shortcut?
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    func makeNSView(context: Context) -> KeyRecorderNSView {
+        let view = KeyRecorderNSView()
+        let coordinator = context.coordinator
+        view.onShortcutChanged = { sc in
+            coordinator.parent.shortcut = sc
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: KeyRecorderNSView, context: Context) {
+        context.coordinator.parent = self
+        if nsView.shortcut != shortcut {
+            nsView.shortcut = shortcut
+        }
+    }
+
+    final class Coordinator {
+        var parent: ShortcutRecorderField
+        init(_ parent: ShortcutRecorderField) { self.parent = parent }
+    }
+}
+
+// MARK: - KeyRecorderNSView
+
+private final class KeyRecorderNSView: NSView {
+    var shortcut: KeyboardShortcuts.Shortcut? { didSet { needsDisplay = true } }
+    var onShortcutChanged: ((KeyboardShortcuts.Shortcut?) -> Void)?
+
+    private var isRecording = false { didSet { needsDisplay = true } }
+
+    // Key codes that are modifier-only (command, shift, option, control, fn, caps lock)
+    private static let modifierKeyCodes: Set<UInt16> = [54, 55, 56, 57, 58, 59, 60, 61, 62, 63]
+
+    override var acceptsFirstResponder: Bool { true }
+    override var intrinsicContentSize: NSSize { NSSize(width: NSView.noIntrinsicMetric, height: 28) }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        focusRingType = .none
+    }
+
+    override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        if result { isRecording = true }
+        return result
+    }
+
+    override func resignFirstResponder() -> Bool {
+        isRecording = false
+        return super.resignFirstResponder()
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+        if shortcut != nil, !isRecording, clearButtonRect.contains(point) {
+            shortcut = nil
+            onShortcutChanged?(nil)
+            return
+        }
+        window?.makeFirstResponder(self)
+    }
+
+    override func keyDown(with event: NSEvent) {
+        guard isRecording else { return }
+
+        if event.keyCode == 53 { // Escape cancels recording
+            window?.makeFirstResponder(nil)
+            return
+        }
+
+        guard !Self.modifierKeyCodes.contains(event.keyCode) else { return }
+
+        let mods = event.modifierFlags.intersection([.command, .option, .shift, .control])
+        let sc = KeyboardShortcuts.Shortcut(keyCode: event.keyCode, modifiers: mods)
+        shortcut = sc
+        onShortcutChanged?(sc)
+        window?.makeFirstResponder(nil)
+    }
+
+    private var clearButtonRect: NSRect {
+        let size: CGFloat = 14
+        return NSRect(x: bounds.width - size - 7, y: (bounds.height - size) / 2, width: size, height: size)
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        let path = NSBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5), xRadius: 6, yRadius: 6)
+
+        if isRecording {
+            NSColor.controlAccentColor.withAlphaComponent(0.1).setFill()
+            NSColor.controlAccentColor.setStroke()
+        } else {
+            NSColor.controlBackgroundColor.setFill()
+            NSColor.separatorColor.setStroke()
+        }
+        path.fill()
+        path.lineWidth = 1
+        path.stroke()
+
+        let label: String
+        let labelColor: NSColor
+
+        if isRecording {
+            label = "Press shortcut…"
+            labelColor = NSColor.secondaryLabelColor
+        } else if let sc = shortcut {
+            label = sc.displayString
+            labelColor = NSColor.labelColor
+        } else {
+            label = "Click to record"
+            labelColor = NSColor.tertiaryLabelColor
+        }
+
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: NSFont.monospacedSystemFont(ofSize: 12, weight: .medium),
+            .foregroundColor: labelColor,
+        ]
+        let attrStr = NSAttributedString(string: label, attributes: attrs)
+        let labelSize = attrStr.size()
+        let labelX = (bounds.width - labelSize.width) / 2
+        let labelY = (bounds.height - labelSize.height) / 2
+        attrStr.draw(at: NSPoint(x: max(8, labelX), y: labelY))
+
+        if !isRecording, shortcut != nil {
+            let xRect = clearButtonRect
+            NSColor.quaternaryLabelColor.setFill()
+            NSBezierPath(ovalIn: xRect).fill()
+
+            let xAttrs: [NSAttributedString.Key: Any] = [
+                .font: NSFont.systemFont(ofSize: 8, weight: .bold),
+                .foregroundColor: NSColor.secondaryLabelColor,
+            ]
+            let xStr = NSAttributedString(string: "✕", attributes: xAttrs)
+            let xSize = xStr.size()
+            xStr.draw(at: NSPoint(x: xRect.midX - xSize.width / 2, y: xRect.midY - xSize.height / 2))
+        }
+    }
+}
+
+// MARK: - KeyCodeMap
+
+private enum KeyCodeMap {
+    static func label(for keyCode: UInt16) -> String {
+        switch keyCode {
+        // Letters
+        case 0: return "A"
+        case 1: return "S"
+        case 2: return "D"
+        case 3: return "F"
+        case 4: return "H"
+        case 5: return "G"
+        case 6: return "Z"
+        case 7: return "X"
+        case 8: return "C"
+        case 9: return "V"
+        case 11: return "B"
+        case 12: return "Q"
+        case 13: return "W"
+        case 14: return "E"
+        case 15: return "R"
+        case 16: return "Y"
+        case 17: return "T"
+        case 31: return "O"
+        case 32: return "U"
+        case 34: return "I"
+        case 35: return "P"
+        case 37: return "L"
+        case 38: return "J"
+        case 40: return "K"
+        case 45: return "N"
+        case 46: return "M"
+        // Numbers
+        case 18: return "1"
+        case 19: return "2"
+        case 20: return "3"
+        case 21: return "4"
+        case 22: return "6"
+        case 23: return "5"
+        case 24: return "="
+        case 25: return "9"
+        case 26: return "7"
+        case 27: return "-"
+        case 28: return "8"
+        case 29: return "0"
+        // Special keys
+        case 36: return "↩"
+        case 48: return "⇥"
+        case 49: return "Space"
+        case 51: return "⌫"
+        case 117: return "⌦"
+        // Arrow keys
+        case 123: return "←"
+        case 124: return "→"
+        case 125: return "↓"
+        case 126: return "↑"
+        // Function keys
+        case 122: return "F1"
+        case 120: return "F2"
+        case 99: return "F3"
+        case 118: return "F4"
+        case 96: return "F5"
+        case 97: return "F6"
+        case 98: return "F7"
+        case 100: return "F8"
+        case 101: return "F9"
+        case 109: return "F10"
+        case 103: return "F11"
+        case 111: return "F12"
+        // Punctuation
+        case 30: return "]"
+        case 33: return "["
+        case 39: return "'"
+        case 41: return ";"
+        case 42: return "\\"
+        case 43: return ","
+        case 44: return "/"
+        case 47: return "."
+        // Navigation
+        case 115: return "↖"
+        case 116: return "⇞"
+        case 119: return "↘"
+        case 121: return "⇟"
+        default: return "?"
         }
     }
 }
