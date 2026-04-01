@@ -13,7 +13,6 @@ struct EditorView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                Spacer().frame(width: 76)
                 tabButton(.cards, image: "rectangle.split.3x1")
                 tabButton(.preferences, image: "slider.horizontal.3")
                 tabButton(.position, image: "mappin.and.ellipse")
