@@ -11,7 +11,7 @@ struct CardListView: View {
             List(selection: $selectedCardID) {
                 ForEach(cards) { card in
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(card.title.isEmpty ? "Untitled" : card.title)
+                        Text(card.displayTitle)
                             .font(.body.weight(.medium))
                         Text(card.paragraphs.first ?? "Empty card")
                             .font(.caption)

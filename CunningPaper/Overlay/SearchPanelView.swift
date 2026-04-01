@@ -40,7 +40,7 @@ struct SearchPanelView: View {
                             onSelect(card)
                         } label: {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(card.title.isEmpty ? "Untitled" : card.title)
+                                Text(card.displayTitle)
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(.primary)
                                 Text(card.paragraphs.first ?? card.body)

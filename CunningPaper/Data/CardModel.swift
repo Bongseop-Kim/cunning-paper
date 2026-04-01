@@ -26,6 +26,8 @@ final class CardModel {
         self.updatedAt = updatedAt
     }
 
+    var displayTitle: String { title.isEmpty ? "Untitled" : title }
+
     var paragraphs: [String] {
         body
             .components(separatedBy: .newlines)

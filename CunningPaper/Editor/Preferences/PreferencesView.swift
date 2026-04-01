@@ -69,7 +69,6 @@ struct PreferencesView: View {
                 .padding(20)
             } else {
                 ProgressView()
-                    .task { ensurePrefsExists() }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }

@@ -11,13 +11,12 @@ enum ActivePanel: Equatable {
 struct OverlayView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \CardModel.order) private var cards: [CardModel]
+    @Query private var prefsArray: [PrefsModel]
     @State private var currentIndex = 0
     @State private var activeParagraphIndex = 0
     @State private var activePanel: ActivePanel = .none
 
-    private var prefs: PrefsModel? {
-        try? context.fetch(FetchDescriptor<PrefsModel>()).first
-    }
+    private var prefs: PrefsModel? { prefsArray.first }
 
     private var currentCard: CardModel? {
         guard cards.indices.contains(currentIndex) else { return nil }
