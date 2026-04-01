@@ -1,0 +1,444 @@
+// !$*UTF8*$!
+{
+	objectVersion = 56;
+	archiveVersion = 1;
+	classes = {
+	};
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA0000010000000000000001 /* CunningPaperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000010000000000000001 /* CunningPaperApp.swift */; };
+		AA0000020000000000000001 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000020000000000000001 /* AppCoordinator.swift */; };
+		AA0000030000000000000001 /* CardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000030000000000000001 /* CardModel.swift */; };
+		AA0000040000000000000001 /* PrefsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000040000000000000001 /* PrefsModel.swift */; };
+		AA0000050000000000000001 /* MigrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000050000000000000001 /* MigrationService.swift */; };
+		AA0000060000000000000001 /* OverlayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000060000000000000001 /* OverlayPanel.swift */; };
+		AA0000070000000000000001 /* CardDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000070000000000000001 /* CardDisplayView.swift */; };
+		AA0000080000000000000001 /* JumpPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000080000000000000001 /* JumpPanelView.swift */; };
+		AA0000090000000000000001 /* SearchPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000090000000000000001 /* SearchPanelView.swift */; };
+		AA00000A0000000000000001 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000A0000000000000001 /* OverlayView.swift */; };
+		AA00000B0000000000000001 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000B0000000000000001 /* EditorView.swift */; };
+		AA00000C0000000000000001 /* CardListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000C0000000000000001 /* CardListView.swift */; };
+		AA00000D0000000000000001 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000D0000000000000001 /* CardDetailView.swift */; };
+		AA00000E0000000000000001 /* CardEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000E0000000000000001 /* CardEmptyStateView.swift */; };
+		AA00000F0000000000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000F0000000000000001 /* PreferencesView.swift */; };
+		AA0000100000000000000001 /* ZonePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000100000000000000001 /* ZonePickerView.swift */; };
+		AA0000110000000000000001 /* PresetListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000110000000000000001 /* PresetListView.swift */; };
+		AA0000120000000000000001 /* GridCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000120000000000000001 /* GridCanvasView.swift */; };
+		AA0000130000000000000001 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000130000000000000001 /* HotkeyManager.swift */; };
+		AA0000140000000000000001 /* TrayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000140000000000000001 /* TrayController.swift */; };
+		AA0000150000000000000001 /* MonitorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000150000000000000001 /* MonitorInfo.swift */; };
+		AA0000160000000000000001 /* ZonePickerMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000160000000000000001 /* ZonePickerMath.swift */; };
+		AA0000170000000000000001 /* GridMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000170000000000000001 /* GridMath.swift */; };
+		AA0000180000000000000001 /* KeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000180000000000000001 /* KeyboardShortcuts.swift */; };
+		AA0000190000000000000001 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000190000000000000001 /* ModelTests.swift */; };
+		AA00001A0000000000000001 /* MigrationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10001A0000000000000001 /* MigrationServiceTests.swift */; };
+		AA00001B0000000000000001 /* GridMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10001B0000000000000001 /* GridMathTests.swift */; };
+		AA00001C0000000000000001 /* ZonePickerMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10001C0000000000000001 /* ZonePickerMathTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AA5000010000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA4000010000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA3000010000000000000001;
+			remoteInfo = CunningPaper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		AA1000010000000000000001 /* CunningPaperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/CunningPaperApp.swift; sourceTree = SOURCE_ROOT; };
+		AA1000020000000000000001 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/AppCoordinator.swift; sourceTree = SOURCE_ROOT; };
+		AA1000030000000000000001 /* CardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Data/CardModel.swift; sourceTree = SOURCE_ROOT; };
+		AA1000040000000000000001 /* PrefsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Data/PrefsModel.swift; sourceTree = SOURCE_ROOT; };
+		AA1000050000000000000001 /* MigrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Data/MigrationService.swift; sourceTree = SOURCE_ROOT; };
+		AA1000060000000000000001 /* OverlayPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Overlay/OverlayPanel.swift; sourceTree = SOURCE_ROOT; };
+		AA1000070000000000000001 /* CardDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Overlay/CardDisplayView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000080000000000000001 /* JumpPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Overlay/JumpPanelView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000090000000000000001 /* SearchPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Overlay/SearchPanelView.swift; sourceTree = SOURCE_ROOT; };
+		AA10000A0000000000000001 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Overlay/OverlayView.swift; sourceTree = SOURCE_ROOT; };
+		AA10000B0000000000000001 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Editor/EditorView.swift; sourceTree = SOURCE_ROOT; };
+		AA10000C0000000000000001 /* CardListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Editor/Cards/CardListView.swift; sourceTree = SOURCE_ROOT; };
+		AA10000D0000000000000001 /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Editor/Cards/CardDetailView.swift; sourceTree = SOURCE_ROOT; };
+		AA10000E0000000000000001 /* CardEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Editor/Cards/CardEmptyStateView.swift; sourceTree = SOURCE_ROOT; };
+		AA10000F0000000000000001 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Editor/Preferences/PreferencesView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000100000000000000001 /* ZonePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Editor/Position/ZonePickerView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000110000000000000001 /* PresetListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Editor/Position/PresetListView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000120000000000000001 /* GridCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Editor/Position/GridCanvasView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000130000000000000001 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/System/HotkeyManager.swift; sourceTree = SOURCE_ROOT; };
+		AA1000140000000000000001 /* TrayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/System/TrayController.swift; sourceTree = SOURCE_ROOT; };
+		AA1000150000000000000001 /* MonitorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Utilities/MonitorInfo.swift; sourceTree = SOURCE_ROOT; };
+		AA1000160000000000000001 /* ZonePickerMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Utilities/ZonePickerMath.swift; sourceTree = SOURCE_ROOT; };
+		AA1000170000000000000001 /* GridMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Utilities/GridMath.swift; sourceTree = SOURCE_ROOT; };
+		AA1000180000000000000001 /* KeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Support/KeyboardShortcuts.swift; sourceTree = SOURCE_ROOT; };
+		AA1000190000000000000001 /* ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/ModelTests.swift; sourceTree = SOURCE_ROOT; };
+		AA10001A0000000000000001 /* MigrationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/MigrationServiceTests.swift; sourceTree = SOURCE_ROOT; };
+		AA10001B0000000000000001 /* GridMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/GridMathTests.swift; sourceTree = SOURCE_ROOT; };
+		AA10001C0000000000000001 /* ZonePickerMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/ZonePickerMathTests.swift; sourceTree = SOURCE_ROOT; };
+		AA10001D0000000000000001 /* CunningPaper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CunningPaper/CunningPaper.entitlements; sourceTree = SOURCE_ROOT; };
+		AA10001E0000000000000001 /* CunningPaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CunningPaper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA10001F0000000000000001 /* CunningPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CunningPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA2000010000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA2000020000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA1001000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				AA1001010000000000000001 /* CunningPaper */,
+				AA1001020000000000000001 /* CunningPaperTests */,
+				AA1001030000000000000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA1001010000000000000001 /* CunningPaper */ = {
+			isa = PBXGroup;
+			children = (
+				AA1000010000000000000001 /* CunningPaperApp.swift */,
+				AA1000020000000000000001 /* AppCoordinator.swift */,
+				AA1000030000000000000001 /* CardModel.swift */,
+				AA1000040000000000000001 /* PrefsModel.swift */,
+				AA1000050000000000000001 /* MigrationService.swift */,
+				AA1000060000000000000001 /* OverlayPanel.swift */,
+				AA1000070000000000000001 /* CardDisplayView.swift */,
+				AA1000080000000000000001 /* JumpPanelView.swift */,
+				AA1000090000000000000001 /* SearchPanelView.swift */,
+				AA10000A0000000000000001 /* OverlayView.swift */,
+				AA10000B0000000000000001 /* EditorView.swift */,
+				AA10000C0000000000000001 /* CardListView.swift */,
+				AA10000D0000000000000001 /* CardDetailView.swift */,
+				AA10000E0000000000000001 /* CardEmptyStateView.swift */,
+				AA10000F0000000000000001 /* PreferencesView.swift */,
+				AA1000100000000000000001 /* ZonePickerView.swift */,
+				AA1000110000000000000001 /* PresetListView.swift */,
+				AA1000120000000000000001 /* GridCanvasView.swift */,
+				AA1000130000000000000001 /* HotkeyManager.swift */,
+				AA1000140000000000000001 /* TrayController.swift */,
+				AA1000150000000000000001 /* MonitorInfo.swift */,
+				AA1000160000000000000001 /* ZonePickerMath.swift */,
+				AA1000170000000000000001 /* GridMath.swift */,
+				AA1000180000000000000001 /* KeyboardShortcuts.swift */,
+				AA10001D0000000000000001 /* CunningPaper.entitlements */,
+			);
+			path = CunningPaper;
+			sourceTree = "<group>";
+		};
+		AA1001020000000000000001 /* CunningPaperTests */ = {
+			isa = PBXGroup;
+			children = (
+				AA1000190000000000000001 /* ModelTests.swift */,
+				AA10001A0000000000000001 /* MigrationServiceTests.swift */,
+				AA10001B0000000000000001 /* GridMathTests.swift */,
+				AA10001C0000000000000001 /* ZonePickerMathTests.swift */,
+			);
+			path = CunningPaperTests;
+			sourceTree = "<group>";
+		};
+		AA1001030000000000000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA10001E0000000000000001 /* CunningPaper.app */,
+				AA10001F0000000000000001 /* CunningPaperTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA3000010000000000000001 /* CunningPaper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA6000010000000000000001 /* Build configuration list for PBXNativeTarget "CunningPaper" */;
+			buildPhases = (
+				AA2000030000000000000001 /* Sources */,
+				AA2000010000000000000001 /* Frameworks */,
+				AA2000040000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CunningPaper;
+			productName = CunningPaper;
+			productReference = AA10001E0000000000000001 /* CunningPaper.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AA3000020000000000000001 /* CunningPaperTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA6000020000000000000001 /* Build configuration list for PBXNativeTarget "CunningPaperTests" */;
+			buildPhases = (
+				AA2000050000000000000001 /* Sources */,
+				AA2000020000000000000001 /* Frameworks */,
+				AA2000060000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA5000020000000000000001 /* PBXTargetDependency */,
+			);
+			name = CunningPaperTests;
+			productName = CunningPaperTests;
+			productReference = AA10001F0000000000000001 /* CunningPaperTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA4000010000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					AA3000010000000000000001 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					AA3000020000000000000001 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = AA3000010000000000000001;
+					};
+				};
+			};
+			buildConfigurationList = AA6000030000000000000001 /* Build configuration list for PBXProject "CunningPaper" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA1001000000000000000001;
+			productRefGroup = AA1001030000000000000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA3000010000000000000001 /* CunningPaper */,
+				AA3000020000000000000001 /* CunningPaperTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA2000040000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA2000060000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA2000030000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000010000000000000001 /* CunningPaperApp.swift in Sources */,
+				AA0000020000000000000001 /* AppCoordinator.swift in Sources */,
+				AA0000030000000000000001 /* CardModel.swift in Sources */,
+				AA0000040000000000000001 /* PrefsModel.swift in Sources */,
+				AA0000050000000000000001 /* MigrationService.swift in Sources */,
+				AA0000060000000000000001 /* OverlayPanel.swift in Sources */,
+				AA0000070000000000000001 /* CardDisplayView.swift in Sources */,
+				AA0000080000000000000001 /* JumpPanelView.swift in Sources */,
+				AA0000090000000000000001 /* SearchPanelView.swift in Sources */,
+				AA00000A0000000000000001 /* OverlayView.swift in Sources */,
+				AA00000B0000000000000001 /* EditorView.swift in Sources */,
+				AA00000C0000000000000001 /* CardListView.swift in Sources */,
+				AA00000D0000000000000001 /* CardDetailView.swift in Sources */,
+				AA00000E0000000000000001 /* CardEmptyStateView.swift in Sources */,
+				AA00000F0000000000000001 /* PreferencesView.swift in Sources */,
+				AA0000100000000000000001 /* ZonePickerView.swift in Sources */,
+				AA0000110000000000000001 /* PresetListView.swift in Sources */,
+				AA0000120000000000000001 /* GridCanvasView.swift in Sources */,
+				AA0000130000000000000001 /* HotkeyManager.swift in Sources */,
+				AA0000140000000000000001 /* TrayController.swift in Sources */,
+				AA0000150000000000000001 /* MonitorInfo.swift in Sources */,
+				AA0000160000000000000001 /* ZonePickerMath.swift in Sources */,
+				AA0000170000000000000001 /* GridMath.swift in Sources */,
+				AA0000180000000000000001 /* KeyboardShortcuts.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA2000050000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000190000000000000001 /* ModelTests.swift in Sources */,
+				AA00001A0000000000000001 /* MigrationServiceTests.swift in Sources */,
+				AA00001B0000000000000001 /* GridMathTests.swift in Sources */,
+				AA00001C0000000000000001 /* ZonePickerMathTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AA5000020000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA3000010000000000000001 /* CunningPaper */;
+			targetProxy = AA5000010000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		AA7000010000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gimbongseob.CunningPaper;
+				PRODUCT_MODULE_NAME = CunningPaper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				CODE_SIGN_ENTITLEMENTS = CunningPaper/CunningPaper.entitlements;
+			};
+			name = Debug;
+		};
+		AA7000020000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gimbongseob.CunningPaper;
+				PRODUCT_MODULE_NAME = CunningPaper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				CODE_SIGN_ENTITLEMENTS = CunningPaper/CunningPaper.entitlements;
+			};
+			name = Release;
+		};
+		AA7000030000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gimbongseob.CunningPaperTests;
+				PRODUCT_MODULE_NAME = CunningPaperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CunningPaper.app/Contents/MacOS/CunningPaper";
+			};
+			name = Debug;
+		};
+		AA7000040000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gimbongseob.CunningPaperTests;
+				PRODUCT_MODULE_NAME = CunningPaperTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CunningPaper.app/Contents/MacOS/CunningPaper";
+			};
+			name = Release;
+		};
+		AA7000050000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+			};
+			name = Debug;
+		};
+		AA7000060000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA6000010000000000000001 /* Build configuration list for PBXNativeTarget "CunningPaper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA7000010000000000000001 /* Debug */,
+				AA7000020000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA6000020000000000000001 /* Build configuration list for PBXNativeTarget "CunningPaperTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA7000030000000000000001 /* Debug */,
+				AA7000040000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA6000030000000000000001 /* Build configuration list for PBXProject "CunningPaper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA7000050000000000000001 /* Debug */,
+				AA7000060000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = AA4000010000000000000001 /* Project object */;
+}
