@@ -5,11 +5,9 @@ import SwiftUI
 enum ActivePanel: Equatable {
     case none
     case jump
-    case search
 }
 
 struct OverlayView: View {
-    @Environment(\.modelContext) private var context
     @Query(sort: \CardModel.order) private var cards: [CardModel]
     @Query private var prefsArray: [PrefsModel]
     @State private var currentIndex = 0
@@ -31,7 +29,6 @@ struct OverlayView: View {
                 .fill(Color.black.opacity(prefs?.opacity ?? 0.85))
 
             CardDisplayView(
-                title: currentCard?.title ?? "",
                 paragraphs: currentCard?.paragraphs ?? ["No cards yet"],
                 activeIndex: activeParagraphIndex,
                 fontSize: prefs?.fontSize ?? 24,
@@ -50,19 +47,6 @@ struct OverlayView: View {
                 )
             }
 
-            if activePanel == .search {
-                SearchPanelView(
-                    cards: cards,
-                    onSelect: { card in
-                        if let index = cards.firstIndex(where: { $0.id == card.id }) {
-                            currentIndex = index
-                            activeParagraphIndex = 0
-                        }
-                        closePanel()
-                    },
-                    onClose: closePanel
-                )
-            }
         }
         .padding(6)
         .onChange(of: activePanel) { _, panel in
@@ -85,8 +69,6 @@ struct OverlayView: View {
             if currentIndex > 0 { currentIndex -= 1 }
         case .jump:
             activePanel = .jump
-        case .search:
-            activePanel = .search
         case .nextLine:
             let maxIndex = max((currentCard?.paragraphs.count ?? 1) - 1, 0)
             if activeParagraphIndex < maxIndex { activeParagraphIndex += 1 }

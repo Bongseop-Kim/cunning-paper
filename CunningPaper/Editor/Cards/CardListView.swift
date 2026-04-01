@@ -19,11 +19,11 @@ struct CardListView: View {
                             .frame(width: 3)
 
                         VStack(alignment: .leading, spacing: 5) {
-                            Text(card.displayTitle)
+                            Text(card.listHeadline)
                                 .font(.body.weight(isSelected ? .semibold : .medium))
                                 .lineLimit(1)
 
-                            Text(card.previewLine)
+                            Text(card.listSubheadline)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
@@ -66,7 +66,7 @@ struct CardListView: View {
 
     private func addBlankCard() {
         let nextOrder = (cards.map(\.order).max() ?? -1) + 1
-        let card = CardModel(title: "", body: "", order: nextOrder)
+        let card = CardModel(body: "", order: nextOrder)
         context.insert(card)
         guard saveContext() else {
             context.delete(card)

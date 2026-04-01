@@ -3,34 +3,45 @@ import XCTest
 
 final class ModelTests: XCTestCase {
     func testCardModelParagraphsSplitsOnNewline() {
-        let card = CardModel(title: "T", body: "line1\nline2\n\nline3")
+        let card = CardModel(body: "line1\nline2\n\nline3")
         XCTAssertEqual(card.paragraphs, ["line1", "line2", "line3"])
     }
 
     func testCardModelParagraphsEmptyBody() {
-        let card = CardModel(title: "T", body: "")
+        let card = CardModel(body: "")
         XCTAssertEqual(card.paragraphs, [])
     }
 
     func testCardModelWhitespaceOnlyBodyIsEmpty() {
-        let card = CardModel(title: "T", body: "   \n\t  ")
+        let card = CardModel(body: "   \n\t  ")
         XCTAssertEqual(card.paragraphs, [])
-        XCTAssertEqual(card.previewLine, "Empty card")
+        XCTAssertEqual(card.listSubheadline, "Empty card")
+        XCTAssertEqual(card.listHeadline, "Empty")
         XCTAssertEqual(card.paragraphCount, 0)
     }
 
-    func testCardModelPreviewLineUsesFirstParagraph() {
-        let card = CardModel(title: "T", body: "first line\nsecond line")
-        XCTAssertEqual(card.previewLine, "first line")
+    func testCardModelListHeadlineUsesFirstWord() {
+        let card = CardModel(body: "first line\nsecond line")
+        XCTAssertEqual(card.listHeadline, "first")
     }
 
-    func testCardModelPreviewLineFallsBackWhenBodyEmpty() {
-        let card = CardModel(title: "T", body: "")
-        XCTAssertEqual(card.previewLine, "Empty card")
+    func testCardModelListHeadlineFallsBackWhenBodyEmpty() {
+        let card = CardModel(body: "")
+        XCTAssertEqual(card.listHeadline, "Empty")
+    }
+
+    func testCardModelListSubheadlineUsesFirstLine() {
+        let card = CardModel(body: "first line\nsecond line")
+        XCTAssertEqual(card.listSubheadline, "first line")
+    }
+
+    func testCardModelListSubheadlineFallsBackWhenBodyEmpty() {
+        let card = CardModel(body: "")
+        XCTAssertEqual(card.listSubheadline, "Empty card")
     }
 
     func testCardModelParagraphCountMatchesParagraphs() {
-        let card = CardModel(title: "T", body: "one\n\ntwo")
+        let card = CardModel(body: "one\n\ntwo")
         XCTAssertEqual(card.paragraphCount, 2)
     }
 
@@ -80,5 +91,12 @@ final class ModelTests: XCTestCase {
         let preset = ZonePreset(id: "test", label: "Test", x: 0, y: 0, w: 0.5, h: 0.5, builtIn: false)
         prefs.customPresets = [preset]
         XCTAssertEqual(prefs.customPresets.first?.id, "test")
+    }
+
+    func testHotkeyActionRemovesSearchAction() {
+        XCTAssertEqual(
+            HotkeyAction.allCases.map(\.rawValue),
+            ["next", "prev", "jump", "nextLine", "prevLine", "toggle"]
+        )
     }
 }

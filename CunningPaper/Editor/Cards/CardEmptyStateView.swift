@@ -7,10 +7,10 @@ struct CardEmptyStateView: View {
 
     let onAddBlank: (UUID) -> Void
 
-    private let sampleCards: [(String, String)] = [
-        ("Introduction", "I build products by reducing ambiguity.\nI care about the edges, not just the happy path."),
-        ("Recent Work", "The last major project focused on a dense operations UI.\nI restructured the flow around decisions rather than raw data."),
-        ("Why This Role", "I prefer teams that value speed and taste together.\nShipping is better when the structure is clear from the start."),
+    private let sampleBodies: [String] = [
+        "I build products by reducing ambiguity.\nI care about the edges, not just the happy path.",
+        "The last major project focused on a dense operations UI.\nI restructured the flow around decisions rather than raw data.",
+        "I prefer teams that value speed and taste together.\nShipping is better when the structure is clear from the start.",
     ]
 
     var body: some View {
@@ -38,7 +38,7 @@ struct CardEmptyStateView: View {
 
     private func addBlankCard() {
         let nextOrder = (cards.map(\.order).max() ?? -1) + 1
-        let card = CardModel(title: "", body: "", order: nextOrder)
+        let card = CardModel(body: "", order: nextOrder)
         context.insert(card)
         guard saveContext() else {
             context.delete(card)
@@ -50,8 +50,8 @@ struct CardEmptyStateView: View {
     private func addSamples() {
         let startOrder = (cards.map(\.order).max() ?? -1) + 1
         var created: [CardModel] = []
-        for (index, sample) in sampleCards.enumerated() {
-            let card = CardModel(title: sample.0, body: sample.1, order: startOrder + Double(index))
+        for (index, body) in sampleBodies.enumerated() {
+            let card = CardModel(body: body, order: startOrder + Double(index))
             context.insert(card)
             created.append(card)
         }

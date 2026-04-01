@@ -4,7 +4,6 @@ enum HotkeyAction: String, CaseIterable {
     case next
     case prev
     case jump
-    case search
     case nextLine
     case prevLine
     case toggle
@@ -14,7 +13,6 @@ extension KeyboardShortcuts.Name {
     static let next = Self("cunningPaper.next")
     static let prev = Self("cunningPaper.prev")
     static let jump = Self("cunningPaper.jump")
-    static let search = Self("cunningPaper.search")
     static let nextLine = Self("cunningPaper.nextLine")
     static let prevLine = Self("cunningPaper.prevLine")
     static let toggle = Self("cunningPaper.toggle")
@@ -32,7 +30,6 @@ final class HotkeyManager {
         register(.next, name: .next)
         register(.prev, name: .prev)
         register(.jump, name: .jump)
-        register(.search, name: .search)
         register(.nextLine, name: .nextLine)
         register(.prevLine, name: .prevLine)
         register(.toggle, name: .toggle)

@@ -17,24 +17,14 @@ struct CardDetailView: View {
                 .textCase(.uppercase)
                 .padding(.horizontal, 24)
                 .padding(.top, 18)
-                .padding(.bottom, 10)
-
-            TextField(
-                "Card title",
-                text: textBinding(for: \.title)
-            )
-            .textFieldStyle(.plain)
-            .font(.system(size: 28, weight: .semibold))
-            .padding(.horizontal, 24)
-            .padding(.top, 8)
-            .padding(.bottom, 18)
+                .padding(.bottom, 12)
 
             CardBodyTextView(
                 text: textBinding(for: \.body),
                 onActiveParagraphChange: onActiveParagraphChange
             )
             .padding(.horizontal, 24)
-            .padding(.vertical, 16)
+            .padding(.bottom, 16)
         }
         .onAppear {
             context.undoManager = undoManager

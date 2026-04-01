@@ -1,14 +1,11 @@
 import SwiftUI
 
 struct CardDisplayView: View {
-    let title: String
     let paragraphs: [String]
     let activeIndex: Int
     let fontSize: Double
     let highlightCurrentParagraph: Bool
     var stackSpacing: CGFloat = 8
-    var titleScale: Double = 0.62
-    var titleOpacity: Double = 0.7
     var paragraphLineSpacing: Double = 0
     var horizontalPadding: CGFloat = 16
     var verticalPadding: CGFloat = 12
@@ -18,13 +15,6 @@ struct CardDisplayView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: stackSpacing) {
-                if !title.isEmpty {
-                    Text(title)
-                        .font(.system(size: fontSize * titleScale, weight: .semibold))
-                        .foregroundStyle(.white.opacity(titleOpacity))
-                        .lineLimit(1)
-                }
-
                 ForEach(Array(paragraphs.enumerated()), id: \.offset) { index, paragraph in
                     Text(paragraph)
                         .font(.system(size: fontSize))

@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct CardPreviewPane: View {
-    let title: String
     let paragraphs: [String]
     let activeParagraphIndex: Int?
 
@@ -25,14 +24,11 @@ struct CardPreviewPane: View {
                 .textCase(.uppercase)
 
             CardDisplayView(
-                title: title,
                 paragraphs: previewWindowParagraphs,
                 activeIndex: 0,
                 fontSize: 20,
                 highlightCurrentParagraph: false,
                 stackSpacing: 10,
-                titleScale: 0.58,
-                titleOpacity: 0.68,
                 paragraphLineSpacing: 20 * 0.16,
                 horizontalPadding: 18,
                 verticalPadding: 16,

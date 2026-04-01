@@ -15,7 +15,6 @@
 		AA0000060000000000000001 /* OverlayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000060000000000000001 /* OverlayPanel.swift */; };
 		AA0000070000000000000001 /* CardDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000070000000000000001 /* CardDisplayView.swift */; };
 		AA0000080000000000000001 /* JumpPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000080000000000000001 /* JumpPanelView.swift */; };
-		AA0000090000000000000001 /* SearchPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000090000000000000001 /* SearchPanelView.swift */; };
 		AA00000A0000000000000001 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000A0000000000000001 /* OverlayView.swift */; };
 		AA00000B0000000000000001 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000B0000000000000001 /* EditorView.swift */; };
 		AA00000C0000000000000001 /* CardListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000C0000000000000001 /* CardListView.swift */; };
@@ -60,7 +59,6 @@
 		AA1000060000000000000001 /* OverlayPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OverlayPanel.swift; path = CunningPaper/Overlay/OverlayPanel.swift; sourceTree = SOURCE_ROOT; };
 		AA1000070000000000000001 /* CardDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardDisplayView.swift; path = CunningPaper/Overlay/CardDisplayView.swift; sourceTree = SOURCE_ROOT; };
 		AA1000080000000000000001 /* JumpPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JumpPanelView.swift; path = CunningPaper/Overlay/JumpPanelView.swift; sourceTree = SOURCE_ROOT; };
-		AA1000090000000000000001 /* SearchPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SearchPanelView.swift; path = CunningPaper/Overlay/SearchPanelView.swift; sourceTree = SOURCE_ROOT; };
 		AA10000A0000000000000001 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OverlayView.swift; path = CunningPaper/Overlay/OverlayView.swift; sourceTree = SOURCE_ROOT; };
 		AA10000B0000000000000001 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EditorView.swift; path = CunningPaper/Editor/EditorView.swift; sourceTree = SOURCE_ROOT; };
 		AA10000C0000000000000001 /* CardListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardListView.swift; path = CunningPaper/Editor/Cards/CardListView.swift; sourceTree = SOURCE_ROOT; };
@@ -123,7 +121,6 @@
 				AA1000060000000000000001 /* OverlayPanel.swift */,
 				AA1000070000000000000001 /* CardDisplayView.swift */,
 				AA1000080000000000000001 /* JumpPanelView.swift */,
-				AA1000090000000000000001 /* SearchPanelView.swift */,
 				AA10000A0000000000000001 /* OverlayView.swift */,
 			);
 			path = Overlay;
@@ -350,7 +347,6 @@
 				AA0000060000000000000001 /* OverlayPanel.swift in Sources */,
 				AA0000070000000000000001 /* CardDisplayView.swift in Sources */,
 				AA0000080000000000000001 /* JumpPanelView.swift in Sources */,
-				AA0000090000000000000001 /* SearchPanelView.swift in Sources */,
 				AA00000A0000000000000001 /* OverlayView.swift in Sources */,
 				AA00000B0000000000000001 /* EditorView.swift in Sources */,
 				AA00000C0000000000000001 /* CardListView.swift in Sources */,

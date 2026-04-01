@@ -58,7 +58,6 @@ struct PreferencesView: View {
                             shortcutRow("Next Card", name: .next)
                             shortcutRow("Previous Card", name: .prev)
                             shortcutRow("Jump", name: .jump)
-                            shortcutRow("Search", name: .search)
                             shortcutRow("Next Paragraph", name: .nextLine)
                             shortcutRow("Previous Paragraph", name: .prevLine)
                             shortcutRow("Toggle Overlay", name: .toggle)

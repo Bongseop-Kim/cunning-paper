@@ -38,7 +38,6 @@ struct CardStudioView: View {
 
     private func previewPane(for selectedCard: CardModel) -> some View {
         CardPreviewPane(
-            title: selectedCard.title,
             paragraphs: selectedCard.paragraphs,
             activeParagraphIndex: activeParagraphIndex
         )
