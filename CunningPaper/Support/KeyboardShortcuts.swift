@@ -1,4 +1,5 @@
 import AppKit
+import Carbon
 import SwiftUI
 
 enum KeyboardShortcuts {
@@ -52,6 +53,10 @@ enum KeyboardShortcuts {
     }
 
     private static var handlers: [Name: () -> Void] = [:]
+    private static var hotKeyRefs: [Name: EventHotKeyRef] = [:]
+    private static var nameForID: [UInt32: Name] = [:]
+    private static var nextID: UInt32 = 1
+    private static var carbonEventHandler: EventHandlerRef?
 
     static func onKeyUp(for name: Name, action: @escaping () -> Void) {
         handlers[name] = action
@@ -61,9 +66,99 @@ enum KeyboardShortcuts {
         handlers[name]?()
     }
 
+    static func startMonitoring() {
+        installCarbonEventHandler()
+        for name in handlers.keys {
+            registerHotKey(for: name)
+        }
+    }
+
+    static func stopMonitoring() {
+        hotKeyRefs.values.forEach { UnregisterEventHotKey($0) }
+        hotKeyRefs.removeAll()
+        nameForID.removeAll()
+        if let h = carbonEventHandler { RemoveEventHandler(h); carbonEventHandler = nil }
+    }
+
+    private static func installCarbonEventHandler() {
+        guard carbonEventHandler == nil else { return }
+        var spec = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyReleased)
+        )
+        InstallEventHandler(
+            GetApplicationEventTarget(),
+            { _, event, _ -> OSStatus in
+                guard let event else { return OSStatus(eventNotHandledErr) }
+                var hkID = EventHotKeyID()
+                GetEventParameter(
+                    event,
+                    EventParamName(kEventParamDirectObject),
+                    EventParamType(typeEventHotKeyID),
+                    nil,
+                    MemoryLayout<EventHotKeyID>.size,
+                    nil,
+                    &hkID
+                )
+                let id = hkID.id
+                DispatchQueue.main.async {
+                    if let name = KeyboardShortcuts.nameForID[id] {
+                        KeyboardShortcuts.trigger(name)
+                    }
+                }
+                return noErr
+            },
+            1, &spec, nil, &carbonEventHandler
+        )
+    }
+
+    private static func registerHotKey(for name: Name) {
+        if let existing = hotKeyRefs[name] {
+            UnregisterEventHotKey(existing)
+            hotKeyRefs.removeValue(forKey: name)
+            nameForID = nameForID.filter { $0.value != name }
+        }
+        guard let sc = Shortcut.from(shortcutString(for: name)) else { return }
+
+        var id = EventHotKeyID()
+        id.signature = "cpap".utf8.prefix(4).reduce(0) { $0 << 8 | FourCharCode($1) }
+        id.id = nextID
+        nextID += 1
+
+        var ref: EventHotKeyRef?
+        let status = RegisterEventHotKey(
+            UInt32(sc.keyCode),
+            carbonModifiers(from: sc.modifiers),
+            id,
+            GetApplicationEventTarget(),
+            0,
+            &ref
+        )
+        if status == noErr, let ref {
+            hotKeyRefs[name] = ref
+            nameForID[id.id] = name
+        }
+    }
+
+    private static func carbonModifiers(from flags: NSEvent.ModifierFlags) -> UInt32 {
+        var c: UInt32 = 0
+        if flags.contains(.command) { c |= UInt32(cmdKey) }
+        if flags.contains(.option)  { c |= UInt32(optionKey) }
+        if flags.contains(.shift)   { c |= UInt32(shiftKey) }
+        if flags.contains(.control) { c |= UInt32(controlKey) }
+        return c
+    }
+
     static func reset(_ names: Name...) {
         let defaults = UserDefaults.standard
-        names.forEach { defaults.removeObject(forKey: storageKey(for: $0)) }
+        for name in names {
+            defaults.removeObject(forKey: storageKey(for: name))
+            if let ref = hotKeyRefs[name] {
+                UnregisterEventHotKey(ref)
+                hotKeyRefs.removeValue(forKey: name)
+                nameForID = nameForID.filter { $0.value != name }
+            }
+        }
     }
 
     static func shortcutString(for name: Name) -> String {
@@ -72,6 +167,7 @@ enum KeyboardShortcuts {
 
     static func setShortcutString(_ value: String, for name: Name) {
         UserDefaults.standard.set(value, forKey: storageKey(for: name))
+        registerHotKey(for: name)
     }
 
     private static func storageKey(for name: Name) -> String {

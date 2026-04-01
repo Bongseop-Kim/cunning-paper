@@ -33,6 +33,11 @@ final class HotkeyManager {
         register(.nextLine, name: .nextLine)
         register(.prevLine, name: .prevLine)
         register(.toggle, name: .toggle)
+        KeyboardShortcuts.startMonitoring()
+    }
+
+    deinit {
+        KeyboardShortcuts.stopMonitoring()
     }
 
     private func register(_ action: HotkeyAction, name: KeyboardShortcuts.Name) {
