@@ -63,8 +63,7 @@ struct CardStudioView: View {
     private func detailEditor(for selectedCard: CardModel) -> some View {
         CardDetailView(
             card: selectedCard,
-            onActiveParagraphChange: updateActiveParagraph,
-            onDelete: resetSelection
+            onActiveParagraphChange: updateActiveParagraph
         )
     }
 

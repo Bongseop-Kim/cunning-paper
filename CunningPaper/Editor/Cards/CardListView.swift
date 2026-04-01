@@ -26,6 +26,13 @@ struct CardListView: View {
                     }
                     .padding(.vertical, 8)
                     .tag(card.id)
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            deleteCard(card)
+                        } label: {
+                            Label("Delete Card", systemImage: "trash")
+                        }
+                    }
                 }
                 .onMove(perform: moveCards)
             }
@@ -59,6 +66,23 @@ struct CardListView: View {
             return
         }
         selectedCardID = card.id
+    }
+
+    private func deleteCard(_ card: CardModel) {
+        if selectedCardID == card.id {
+            let index = cards.firstIndex(where: { $0.id == card.id })
+            if let index {
+                if index + 1 < cards.count {
+                    selectedCardID = cards[index + 1].id
+                } else if index - 1 >= 0 {
+                    selectedCardID = cards[index - 1].id
+                } else {
+                    selectedCardID = nil
+                }
+            }
+        }
+        context.delete(card)
+        _ = saveContext()
     }
 
     private func moveCards(from source: IndexSet, to destination: Int) {

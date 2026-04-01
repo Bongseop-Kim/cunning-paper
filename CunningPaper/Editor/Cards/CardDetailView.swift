@@ -7,7 +7,6 @@ struct CardDetailView: View {
 
     let card: CardModel
     let onActiveParagraphChange: (Int?) -> Void
-    let onDelete: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -31,19 +30,6 @@ struct CardDetailView: View {
         }
         .onDisappear {
             context.undoManager = nil
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Menu {
-                    Button(role: .destructive) {
-                        deleteCard()
-                    } label: {
-                        Text("Delete Card")
-                    }
-                } label: {
-                    Text("More")
-                }
-            }
         }
     }
 
@@ -72,15 +58,4 @@ struct CardDetailView: View {
         }
     }
 
-    private func deleteCard() {
-        context.delete(card)
-
-        do {
-            try context.save()
-            onDelete()
-        } catch {
-            context.insert(card)
-            assertionFailure("Failed to delete card: \(error)")
-        }
-    }
 }
