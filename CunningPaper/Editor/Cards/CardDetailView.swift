@@ -4,73 +4,93 @@ import SwiftUI
 struct CardDetailView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.undoManager) private var undoManager
-    @Query private var cards: [CardModel]
 
-    let cardID: UUID
+    let card: CardModel
+    let onActiveParagraphChange: (Int?) -> Void
     let onDelete: () -> Void
 
-    private var card: CardModel? {
-        cards.first(where: { $0.id == cardID })
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(card.paragraphCountLabel)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+                .padding(.horizontal, 24)
+                .padding(.top, 18)
+                .padding(.bottom, 10)
+
+            TextField(
+                "Card title",
+                text: textBinding(for: \.title)
+            )
+            .textFieldStyle(.plain)
+            .font(.system(size: 28, weight: .semibold))
+            .padding(.horizontal, 24)
+            .padding(.top, 8)
+            .padding(.bottom, 18)
+
+            CardBodyTextView(
+                text: textBinding(for: \.body),
+                onActiveParagraphChange: onActiveParagraphChange
+            )
+            .padding(.horizontal, 24)
+            .padding(.vertical, 16)
+        }
+        .onAppear {
+            context.undoManager = undoManager
+        }
+        .onDisappear {
+            context.undoManager = nil
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Button(role: .destructive) {
+                        deleteCard()
+                    } label: {
+                        Text("Delete Card")
+                    }
+                } label: {
+                    Text("More")
+                }
+            }
+        }
     }
 
-    var body: some View {
-        Group {
-            if let card {
-                VStack(spacing: 0) {
-                    TextField(
-                        "Title",
-                        text: Binding(
-                            get: { card.title },
-                            set: {
-                                card.title = $0
-                                card.updatedAt = Date()
-                                try? context.save()
-                            }
-                        )
-                    )
-                    .textFieldStyle(.plain)
-                    .font(.title2.weight(.semibold))
-                    .padding(.horizontal, 18)
-                    .padding(.top, 18)
-                    .padding(.bottom, 12)
-
-                    Divider()
-
-                    TextEditor(
-                        text: Binding(
-                            get: { card.body },
-                            set: {
-                                card.body = $0
-                                card.updatedAt = Date()
-                                try? context.save()
-                            }
-                        )
-                    )
-                    .font(.body)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-
-                    Divider()
-
-                    HStack {
-                        Spacer()
-                        Button(role: .destructive) {
-                            context.delete(card)
-                            try? context.save()
-                            onDelete()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                        .buttonStyle(.plain)
-                        .padding(12)
-                    }
+    private func textBinding(for keyPath: ReferenceWritableKeyPath<CardModel, String>) -> Binding<String> {
+        Binding(
+            get: { card[keyPath: keyPath] },
+            set: { newValue in
+                let previousValue = card[keyPath: keyPath]
+                let previousUpdatedAt = card.updatedAt
+                card[keyPath: keyPath] = newValue
+                card.updatedAt = Date()
+                saveCardMutation {
+                    card[keyPath: keyPath] = previousValue
+                    card.updatedAt = previousUpdatedAt
                 }
-                .onAppear {
-                    context.undoManager = undoManager
-                }
-            } else {
-                ContentUnavailableView("Card not found", systemImage: "doc")
             }
+        )
+    }
+
+    private func saveCardMutation(restore: () -> Void) {
+        do {
+            try context.save()
+        } catch {
+            restore()
+            assertionFailure("Failed to save card changes: \(error)")
+        }
+    }
+
+    private func deleteCard() {
+        context.delete(card)
+
+        do {
+            try context.save()
+            onDelete()
+        } catch {
+            context.insert(card)
+            assertionFailure("Failed to delete card: \(error)")
         }
     }
 }

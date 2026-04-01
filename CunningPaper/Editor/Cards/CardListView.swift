@@ -3,6 +3,7 @@ import SwiftUI
 
 struct CardListView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.controlActiveState) private var controlActiveState
     @Query(sort: \CardModel.order) private var cards: [CardModel]
     @Binding var selectedCardID: UUID?
 
@@ -10,32 +11,56 @@ struct CardListView: View {
         VStack(spacing: 0) {
             List(selection: $selectedCardID) {
                 ForEach(cards) { card in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(card.displayTitle)
-                            .font(.body.weight(.medium))
-                        Text(card.paragraphs.first ?? "Empty card")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
+                    let isSelected = selectedCardID == card.id
+
+                    HStack(spacing: 10) {
+                        RoundedRectangle(cornerRadius: 1)
+                            .fill(isSelected ? Color.accentColor : .clear)
+                            .frame(width: 3)
+
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(card.displayTitle)
+                                .font(.body.weight(isSelected ? .semibold : .medium))
+                                .lineLimit(1)
+
+                            Text(card.previewLine)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+
+                            Text("\(card.paragraphCount) paragraphs")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.vertical, 8)
                     }
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(selectionBackgroundColor(isSelected: isSelected))
+                    )
+                    .listRowBackground(Color.clear)
                     .tag(card.id)
                 }
                 .onMove(perform: moveCards)
             }
             .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
 
-            Divider()
+            HStack {
+                Button {
+                    addBlankCard()
+                } label: {
+                    Label("New Card", systemImage: "plus")
+                        .font(.subheadline.weight(.semibold))
+                }
+                .buttonStyle(.borderless)
 
-            Button {
-                addBlankCard()
-            } label: {
-                Label("New Card", systemImage: "plus")
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 36)
+                Spacer()
             }
-            .buttonStyle(.plain)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(.bar)
         }
     }
 
@@ -43,7 +68,10 @@ struct CardListView: View {
         let nextOrder = (cards.map(\.order).max() ?? -1) + 1
         let card = CardModel(title: "", body: "", order: nextOrder)
         context.insert(card)
-        try? context.save()
+        guard saveContext() else {
+            context.delete(card)
+            return
+        }
         selectedCardID = card.id
     }
 
@@ -53,6 +81,22 @@ struct CardListView: View {
         for (index, card) in reordered.enumerated() {
             card.order = Double(index)
         }
-        try? context.save()
+        _ = saveContext()
+    }
+
+    private func selectionBackgroundColor(isSelected: Bool) -> Color {
+        guard isSelected else { return .clear }
+        let opacity = controlActiveState == .key ? 0.10 : 0.05
+        return Color.accentColor.opacity(opacity)
+    }
+
+    private func saveContext() -> Bool {
+        do {
+            try context.save()
+            return true
+        } catch {
+            assertionFailure("Failed to save card list changes: \(error)")
+            return false
+        }
     }
 }

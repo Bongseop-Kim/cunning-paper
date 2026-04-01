@@ -34,4 +34,16 @@ final class CardModel {
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
     }
+
+    var previewLine: String {
+        paragraphs.first ?? "Empty card"
+    }
+
+    var paragraphCount: Int {
+        paragraphs.count
+    }
+
+    var paragraphCountLabel: String {
+        paragraphCount == 1 ? "1 paragraph" : "\(paragraphCount) paragraphs"
+    }
 }

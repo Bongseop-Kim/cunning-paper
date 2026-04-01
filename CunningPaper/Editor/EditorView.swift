@@ -26,20 +26,7 @@ struct EditorView: View {
             Group {
                 switch selectedTab {
                 case .cards:
-                    HStack(spacing: 0) {
-                        CardListView(selectedCardID: $selectedCardID)
-                            .frame(width: 220)
-                        Divider()
-                        if let selectedCardID {
-                            CardDetailView(cardID: selectedCardID) {
-                                self.selectedCardID = nil
-                            }
-                        } else {
-                            CardEmptyStateView { newID in
-                                selectedCardID = newID
-                            }
-                        }
-                    }
+                    CardStudioView(selectedCardID: $selectedCardID)
                 case .preferences:
                     PreferencesView()
                 case .position:

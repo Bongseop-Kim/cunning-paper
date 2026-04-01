@@ -14,33 +14,36 @@ struct CardEmptyStateView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 14) {
-            Image(systemName: "rectangle.stack")
-                .font(.system(size: 30))
-                .foregroundStyle(.secondary)
-            Text("Select a card or create one")
-                .font(.headline)
-            Text("Start with a blank card or seed the editor with sample content.")
+        VStack(alignment: .center, spacing: 18) {
+            Text("Create your first card")
+                .font(.title3.weight(.semibold))
+
+            Text("Create a card and see its reading preview as you write.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .frame(maxWidth: 320)
+                .frame(maxWidth: 340)
 
-            HStack(spacing: 12) {
-                Button("Add Samples", action: addSamples)
+            VStack(spacing: 10) {
+                Button("Create First Card", action: addBlankCard)
                     .buttonStyle(.borderedProminent)
-                Button("Blank Card", action: addBlankCard)
-                    .buttonStyle(.bordered)
+
+                Button("Add Samples", action: addSamples)
+                    .buttonStyle(.borderless)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(32)
     }
 
     private func addBlankCard() {
         let nextOrder = (cards.map(\.order).max() ?? -1) + 1
         let card = CardModel(title: "", body: "", order: nextOrder)
         context.insert(card)
-        try? context.save()
+        guard saveContext() else {
+            context.delete(card)
+            return
+        }
         onAddBlank(card.id)
     }
 
@@ -52,9 +55,24 @@ struct CardEmptyStateView: View {
             context.insert(card)
             created.append(card)
         }
-        try? context.save()
+        guard saveContext() else {
+            for card in created {
+                context.delete(card)
+            }
+            return
+        }
         if let first = created.first {
             onAddBlank(first.id)
+        }
+    }
+
+    private func saveContext() -> Bool {
+        do {
+            try context.save()
+            return true
+        } catch {
+            assertionFailure("Failed to save empty-state card changes: \(error)")
+            return false
         }
     }
 }

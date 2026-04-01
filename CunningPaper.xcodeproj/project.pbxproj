@@ -21,6 +21,10 @@
 		AA00000C0000000000000001 /* CardListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000C0000000000000001 /* CardListView.swift */; };
 		AA00000D0000000000000001 /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000D0000000000000001 /* CardDetailView.swift */; };
 		AA00000E0000000000000001 /* CardEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000E0000000000000001 /* CardEmptyStateView.swift */; };
+		AA0000200000000000000001 /* CardPreviewPane.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000200000000000000001 /* CardPreviewPane.swift */; };
+		AA0000210000000000000001 /* CardStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000210000000000000001 /* CardStudioView.swift */; };
+		AA0000220000000000000001 /* ParagraphFocus.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000220000000000000001 /* ParagraphFocus.swift */; };
+		AA0000230000000000000001 /* CardBodyTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000230000000000000001 /* CardBodyTextView.swift */; };
 		AA00000F0000000000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000F0000000000000001 /* PreferencesView.swift */; };
 		AA0000100000000000000001 /* ZonePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000100000000000000001 /* ZonePickerView.swift */; };
 		AA0000110000000000000001 /* PresetListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000110000000000000001 /* PresetListView.swift */; };
@@ -62,6 +66,10 @@
 		AA10000C0000000000000001 /* CardListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardListView.swift; path = CunningPaper/Editor/Cards/CardListView.swift; sourceTree = SOURCE_ROOT; };
 		AA10000D0000000000000001 /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardDetailView.swift; path = CunningPaper/Editor/Cards/CardDetailView.swift; sourceTree = SOURCE_ROOT; };
 		AA10000E0000000000000001 /* CardEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardEmptyStateView.swift; path = CunningPaper/Editor/Cards/CardEmptyStateView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000200000000000000001 /* CardPreviewPane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardPreviewPane.swift; path = CunningPaper/Editor/Cards/CardPreviewPane.swift; sourceTree = SOURCE_ROOT; };
+		AA1000210000000000000001 /* CardStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardStudioView.swift; path = CunningPaper/Editor/Cards/CardStudioView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000220000000000000001 /* ParagraphFocus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ParagraphFocus.swift; path = CunningPaper/Utilities/ParagraphFocus.swift; sourceTree = SOURCE_ROOT; };
+		AA1000230000000000000001 /* CardBodyTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardBodyTextView.swift; path = CunningPaper/Editor/Cards/CardBodyTextView.swift; sourceTree = SOURCE_ROOT; };
 		AA10000F0000000000000001 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PreferencesView.swift; path = CunningPaper/Editor/Preferences/PreferencesView.swift; sourceTree = SOURCE_ROOT; };
 		AA1000100000000000000001 /* ZonePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ZonePickerView.swift; path = CunningPaper/Editor/Position/ZonePickerView.swift; sourceTree = SOURCE_ROOT; };
 		AA1000110000000000000001 /* PresetListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PresetListView.swift; path = CunningPaper/Editor/Position/PresetListView.swift; sourceTree = SOURCE_ROOT; };
@@ -146,6 +154,7 @@
 				AA1000150000000000000001 /* MonitorInfo.swift */,
 				AA1000160000000000000001 /* ZonePickerMath.swift */,
 				AA1000170000000000000001 /* GridMath.swift */,
+				AA1000220000000000000001 /* ParagraphFocus.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -163,7 +172,10 @@
 			isa = PBXGroup;
 			children = (
 				AA10000E0000000000000001 /* CardEmptyStateView.swift */,
+				AA1000230000000000000001 /* CardBodyTextView.swift */,
 				AA10000D0000000000000001 /* CardDetailView.swift */,
+				AA1000200000000000000001 /* CardPreviewPane.swift */,
+				AA1000210000000000000001 /* CardStudioView.swift */,
 				AA10000C0000000000000001 /* CardListView.swift */,
 			);
 			path = Cards;
@@ -344,6 +356,9 @@
 				AA00000C0000000000000001 /* CardListView.swift in Sources */,
 				AA00000D0000000000000001 /* CardDetailView.swift in Sources */,
 				AA00000E0000000000000001 /* CardEmptyStateView.swift in Sources */,
+				AA0000230000000000000001 /* CardBodyTextView.swift in Sources */,
+				AA0000200000000000000001 /* CardPreviewPane.swift in Sources */,
+				AA0000210000000000000001 /* CardStudioView.swift in Sources */,
 				AA00000F0000000000000001 /* PreferencesView.swift in Sources */,
 				AA0000100000000000000001 /* ZonePickerView.swift in Sources */,
 				AA0000110000000000000001 /* PresetListView.swift in Sources */,
@@ -353,6 +368,7 @@
 				AA0000150000000000000001 /* MonitorInfo.swift in Sources */,
 				AA0000160000000000000001 /* ZonePickerMath.swift in Sources */,
 				AA0000170000000000000001 /* GridMath.swift in Sources */,
+				AA0000220000000000000001 /* ParagraphFocus.swift in Sources */,
 				AA0000180000000000000001 /* KeyboardShortcuts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
