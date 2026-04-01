@@ -3,7 +3,6 @@ import SwiftUI
 
 struct CardListView: View {
     @Environment(\.modelContext) private var context
-    @Environment(\.controlActiveState) private var controlActiveState
     @Query(sort: \CardModel.order) private var cards: [CardModel]
     @Binding var selectedCardID: UUID?
 
@@ -11,34 +10,21 @@ struct CardListView: View {
         VStack(spacing: 0) {
             List(selection: $selectedCardID) {
                 ForEach(cards) { card in
-                    let isSelected = selectedCardID == card.id
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(card.listHeadline)
+                            .font(.body.weight(.medium))
+                            .lineLimit(1)
 
-                    HStack(spacing: 10) {
-                        RoundedRectangle(cornerRadius: 1)
-                            .fill(isSelected ? Color.accentColor : .clear)
-                            .frame(width: 3)
+                        Text(card.listSubheadline)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
 
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(card.listHeadline)
-                                .font(.body.weight(isSelected ? .semibold : .medium))
-                                .lineLimit(1)
-
-                            Text(card.listSubheadline)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-
-                            Text("\(card.paragraphCount) paragraphs")
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
-                        }
-                        .padding(.vertical, 8)
+                        Text("\(card.paragraphCount) paragraphs")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
                     }
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(selectionBackgroundColor(isSelected: isSelected))
-                    )
-                    .listRowBackground(Color.clear)
+                    .padding(.vertical, 8)
                     .tag(card.id)
                 }
                 .onMove(perform: moveCards)
@@ -82,12 +68,6 @@ struct CardListView: View {
             card.order = Double(index)
         }
         _ = saveContext()
-    }
-
-    private func selectionBackgroundColor(isSelected: Bool) -> Color {
-        guard isSelected else { return .clear }
-        let opacity = controlActiveState == .key ? 0.10 : 0.05
-        return Color.accentColor.opacity(opacity)
     }
 
     private func saveContext() -> Bool {
