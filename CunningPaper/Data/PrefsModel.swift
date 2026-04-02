@@ -5,7 +5,6 @@ struct HotkeyConfig: Codable, Equatable {
     var next: String
     var prev: String
     var jump: String
-    var search: String
     var nextLine: String
     var prevLine: String
     var toggle: String
@@ -14,7 +13,6 @@ struct HotkeyConfig: Codable, Equatable {
         next: "control+right",
         prev: "control+left",
         jump: "control+g",
-        search: "control+f",
         nextLine: "control+down",
         prevLine: "control+up",
         toggle: "control+shift+o"
