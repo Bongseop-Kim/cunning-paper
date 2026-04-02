@@ -48,4 +48,56 @@ final class ZonePickerPresentationTests: XCTestCase {
         XCTAssertEqual(displayed.prefix(2).map(\.id), ["newer", "older"])
         XCTAssertEqual(displayed.dropFirst(2).first?.id, "full")
     }
+
+    func testQuickPresetPreviewUsesTopLayoutForWidePreviewArea() {
+        let layout = ZonePickerPresentation.quickPresetPreviewLayout(
+            availableWidth: 118,
+            availableHeight: 72
+        )
+
+        XCTAssertEqual(layout, .topThumbnail)
+    }
+
+    func testQuickPresetPreviewUsesSideLayoutForTightPreviewArea() {
+        let layout = ZonePickerPresentation.quickPresetPreviewLayout(
+            availableWidth: 92,
+            availableHeight: 72
+        )
+
+        XCTAssertEqual(layout, .sideIcon)
+    }
+
+    func testQuickPresetPreviewFrameUsesExpectedTopThumbnailSize() {
+        let size = ZonePickerPresentation.quickPresetPreviewFrame(for: .topThumbnail)
+
+        XCTAssertEqual(size.width, 56)
+        XCTAssertEqual(size.height, 34)
+    }
+
+    func testQuickPresetPreviewFrameUsesExpectedSideIconSize() {
+        let size = ZonePickerPresentation.quickPresetPreviewFrame(for: .sideIcon)
+
+        XCTAssertEqual(size.width, 34)
+        XCTAssertEqual(size.height, 26)
+    }
+
+    func testQuickPresetPreviewLayoutTreatsMinimumCardWidthAsTopThumbnail() {
+        let layout = ZonePickerPresentation.quickPresetPreviewLayout(
+            availableWidth: 110,
+            availableHeight: 72
+        )
+
+        XCTAssertEqual(layout, .topThumbnail)
+    }
+
+    func testDisplayPresetsKeepsNewestCustomPresetAheadOfBuiltIns() {
+        let custom = [
+            ZonePreset(id: "older", label: "Older", x: 0, y: 0, w: 0.5, h: 1, builtIn: false, monitorId: nil, monitorName: nil),
+            ZonePreset(id: "newer", label: "Newer", x: 0.5, y: 0, w: 0.5, h: 1, builtIn: false, monitorId: nil, monitorName: nil)
+        ]
+
+        let displayed = ZonePickerPresentation.displayPresets(customPresets: custom)
+
+        XCTAssertEqual(displayed.map(\.id), ["newer", "older", "full", "left", "right", "top", "bottom", "center"])
+    }
 }

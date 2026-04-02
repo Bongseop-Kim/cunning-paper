@@ -6,6 +6,8 @@ struct QuickPositionBar: View {
     let onSelect: (ZonePreset) -> Void
     let onDelete: ((ZonePreset) -> Void)?
 
+    private let cardContentHeight: CGFloat = 72
+
     private var columns: [GridItem] {
         [GridItem(.adaptive(minimum: 110, maximum: 150), spacing: 10, alignment: .leading)]
     }
@@ -32,21 +34,22 @@ struct QuickPositionBar: View {
                         Button {
                             onSelect(preset)
                         } label: {
-                            VStack(alignment: .leading, spacing: 4) {
-                                if !preset.builtIn {
-                                    Text("Saved")
-                                        .font(.caption2.weight(.semibold))
-                                        .foregroundStyle(.secondary)
-                                }
+                            GeometryReader { proxy in
+                                let layout = ZonePickerPresentation.quickPresetPreviewLayout(
+                                    availableWidth: proxy.size.width,
+                                    availableHeight: cardContentHeight
+                                )
 
-                                Text(preset.label)
-                                    .font(.subheadline.weight(.medium))
-                                    .multilineTextAlignment(.leading)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                quickPositionContent(
+                                    for: preset,
+                                    layout: layout,
+                                    isActive: isActive
+                                )
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 10)
                             }
-                            .frame(maxWidth: .infinity, minHeight: 54, alignment: .leading)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 10)
+                            .frame(minHeight: cardContentHeight)
                             .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                         }
                         .buttonStyle(.plain)
@@ -69,6 +72,44 @@ struct QuickPositionBar: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func quickPositionContent(
+        for preset: ZonePreset,
+        layout: QuickPresetPreviewLayout,
+        isActive: Bool
+    ) -> some View {
+        switch layout {
+        case .topThumbnail:
+            VStack(alignment: .leading, spacing: 6) {
+                PresetPreviewView(preset: preset, layout: layout, isActive: isActive)
+                quickPositionLabelBlock(for: preset)
+            }
+        case .sideIcon:
+            HStack(alignment: .center, spacing: 10) {
+                PresetPreviewView(preset: preset, layout: layout, isActive: isActive)
+                quickPositionLabelBlock(for: preset)
+            }
+        }
+    }
+
+    private func quickPositionLabelBlock(for preset: ZonePreset) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            if !preset.builtIn {
+                Text("Saved")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+
+            Text(preset.label)
+                .font(.subheadline.weight(.medium))
+                .lineLimit(2)
+                .minimumScaleFactor(0.9)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .accessibilityElement(children: .combine)
     }
 
     private func backgroundColor(for preset: ZonePreset, isActive: Bool) -> Color {
