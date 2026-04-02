@@ -10,6 +10,7 @@ struct CardDisplayView: View {
     var horizontalPadding: CGFloat = 16
     var verticalPadding: CGFloat = 12
     var paragraphOpacities: [Double]? = nil
+    var paragraphLineLimit: Int? = nil
     var bottomFadeHeight: CGFloat = 28
 
     var body: some View {
@@ -19,6 +20,8 @@ struct CardDisplayView: View {
                     Text(paragraph)
                         .font(.system(size: fontSize))
                         .lineSpacing(paragraphLineSpacing)
+                        .lineLimit(paragraphLineLimit)
+                        .truncationMode(.tail)
                         .foregroundStyle(foregroundColor(for: index))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

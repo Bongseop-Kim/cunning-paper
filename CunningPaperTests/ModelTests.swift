@@ -94,6 +94,24 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(ParagraphFocus.previewWindowOpacities(count: 3, activeSlot: 1), [0.35, 1.0, 0.55])
     }
 
+    func testCardPreviewMetricsCardHeightMatchesVisibleParagraphCount() {
+        let lineHeight = NSLayoutManager().defaultLineHeight(
+            for: NSFont.systemFont(ofSize: CardPreviewMetrics.fontSize)
+        )
+        let expectedHeight = ceil((lineHeight * 3) + (CardPreviewMetrics.stackSpacing * 2) + (CardPreviewMetrics.verticalPadding * 2))
+
+        XCTAssertEqual(CardPreviewMetrics.cardHeight(forVisibleParagraphs: 3), expectedHeight)
+    }
+
+    func testCardPreviewMetricsCardHeightDoesNotUnderflowForSingleParagraph() {
+        let lineHeight = NSLayoutManager().defaultLineHeight(
+            for: NSFont.systemFont(ofSize: CardPreviewMetrics.fontSize)
+        )
+        let expectedHeight = ceil(lineHeight + (CardPreviewMetrics.verticalPadding * 2))
+
+        XCTAssertEqual(CardPreviewMetrics.cardHeight(forVisibleParagraphs: 0), expectedHeight)
+    }
+
     func testPrefsModelHotkeysRoundtrip() {
         let prefs = PrefsModel()
         var hotkeys = prefs.hotkeys
