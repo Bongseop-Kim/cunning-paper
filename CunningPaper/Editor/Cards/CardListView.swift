@@ -70,11 +70,19 @@ struct CardListView: View {
         let nextOrder = (cards.map(\.order).max() ?? -1) + 1
         let card = CardModel(body: "", order: nextOrder)
         context.insert(card)
-        guard case .success = saveContext() else {
+        switch saveContext() {
+        case .success:
+            selectedCardID = card.id
+        case .failure(let error):
             context.delete(card)
-            return
+            Self.handleMutationSaveFailure(
+                error,
+                fallbackMessage: "The card could not be created.",
+                rollback: {},
+                presentError: presentSaveError,
+                playFailureSound: { NSSound.beep() }
+            )
         }
-        selectedCardID = card.id
     }
 
     private func deleteCard(_ card: CardModel) {
@@ -85,10 +93,16 @@ struct CardListView: View {
         case .success:
             selectedCardID = nextSelection
         case .failure(let error):
-            context.rollback()
-            selectedCardID = previousSelection
-            presentSaveError(error, fallbackMessage: "The card could not be deleted.")
-            NSSound.beep()
+            Self.handleMutationSaveFailure(
+                error,
+                fallbackMessage: "The card could not be deleted.",
+                rollback: {
+                    context.rollback()
+                    selectedCardID = previousSelection
+                },
+                presentError: presentSaveError,
+                playFailureSound: { NSSound.beep() }
+            )
         }
     }
 
@@ -102,9 +116,13 @@ struct CardListView: View {
         case .success:
             break
         case .failure(let error):
-            context.rollback()
-            presentSaveError(error, fallbackMessage: "The cards could not be reordered.")
-            NSSound.beep()
+            Self.handleMutationSaveFailure(
+                error,
+                fallbackMessage: "The cards could not be reordered.",
+                rollback: { context.rollback() },
+                presentError: presentSaveError,
+                playFailureSound: { NSSound.beep() }
+            )
         }
     }
 
@@ -138,6 +156,18 @@ struct CardListView: View {
     private func presentSaveError(_ error: Error, fallbackMessage: String) {
         let description = error.localizedDescription
         errorMessage = description.isEmpty ? fallbackMessage : description
+    }
+
+    static func handleMutationSaveFailure(
+        _ error: Error,
+        fallbackMessage: String,
+        rollback: () -> Void,
+        presentError: (Error, String) -> Void,
+        playFailureSound: () -> Void
+    ) {
+        rollback()
+        presentError(error, fallbackMessage)
+        playFailureSound()
     }
 
     private func saveContext() -> Result<Void, Error> {

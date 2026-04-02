@@ -37,7 +37,11 @@ struct CardDetailView: View {
         .onAppear {
             context.undoManager = undoManager
         }
+        .onChange(of: card.id) { _, _ in
+            Self.resetActiveParagraph(using: onActiveParagraphChange)
+        }
         .onDisappear {
+            Self.resetActiveParagraph(using: onActiveParagraphChange)
             context.undoManager = nil
         }
         .alert("Couldn't Save Changes", isPresented: saveErrorPresented) {
@@ -90,5 +94,9 @@ struct CardDetailView: View {
         let description = error.localizedDescription
         Self.logger.error("Failed to save card changes: \(String(describing: error), privacy: .public)")
         saveErrorMessage = description.isEmpty ? fallbackMessage : description
+    }
+
+    static func resetActiveParagraph(using onActiveParagraphChange: (Int?) -> Void) {
+        onActiveParagraphChange(nil)
     }
 }

@@ -141,6 +141,37 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(reportedParagraph, 0)
     }
 
+    func testCardDetailViewResetActiveParagraphReportsNil() {
+        var reportedParagraph: Int? = 3
+
+        CardDetailView.resetActiveParagraph(using: { reportedParagraph = $0 })
+
+        XCTAssertNil(reportedParagraph)
+    }
+
+    func testCardListViewHandleMutationSaveFailurePresentsErrorAndBeeps() {
+        enum SampleError: Error { case failure }
+
+        var rollbackCallCount = 0
+        var presented: (error: Error, fallbackMessage: String)?
+        var beepCallCount = 0
+
+        CardListView.handleMutationSaveFailure(
+            SampleError.failure,
+            fallbackMessage: "The card could not be created.",
+            rollback: { rollbackCallCount += 1 },
+            presentError: { error, fallbackMessage in
+                presented = (error, fallbackMessage)
+            },
+            playFailureSound: { beepCallCount += 1 }
+        )
+
+        XCTAssertEqual(rollbackCallCount, 1)
+        XCTAssertEqual(presented?.fallbackMessage, "The card could not be created.")
+        XCTAssertTrue(presented?.error is SampleError)
+        XCTAssertEqual(beepCallCount, 1)
+    }
+
     func testPrefsModelCustomPresetsRoundtrip() {
         let prefs = PrefsModel()
         let preset = ZonePreset(id: "test", label: "Test", x: 0, y: 0, w: 0.5, h: 0.5, builtIn: false)
