@@ -4,6 +4,7 @@ import SwiftUI
 struct PreferencesView: View {
     @Environment(\.modelContext) private var context
     @Query private var prefsArray: [PrefsModel]
+    @State private var saveErrorMessage: String?
 
     var body: some View {
         ScrollView {
@@ -24,7 +25,7 @@ struct PreferencesView: View {
                                     get: { prefs.fontSize },
                                     set: {
                                         prefs.fontSize = $0
-                                        try? context.save()
+                                        savePreferences()
                                     }
                                 ),
                                 range: 14...40,
@@ -40,7 +41,7 @@ struct PreferencesView: View {
                                     get: { prefs.opacity },
                                     set: {
                                         prefs.opacity = $0
-                                        try? context.save()
+                                        savePreferences()
                                     }
                                 ),
                                 range: 0.35...1.0,
@@ -55,7 +56,7 @@ struct PreferencesView: View {
                                     get: { prefs.highlightCurrentParagraph },
                                     set: {
                                         prefs.highlightCurrentParagraph = $0
-                                        try? context.save()
+                                        savePreferences()
                                     }
                                 ),
                                 showDivider: false
@@ -88,6 +89,13 @@ struct PreferencesView: View {
         }
         .task {
             ensurePrefsExists()
+        }
+        .alert("Couldn't Save Preferences", isPresented: saveErrorPresented) {
+            Button("OK") {
+                saveErrorMessage = nil
+            }
+        } message: {
+            Text(saveErrorMessage ?? "The preference change could not be saved.")
         }
     }
 
@@ -225,7 +233,28 @@ struct PreferencesView: View {
     private func ensurePrefsExists() {
         guard prefsArray.isEmpty else { return }
         context.insert(PrefsModel())
-        try? context.save()
+        savePreferences()
+    }
+
+    private func savePreferences() {
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            NSLog("Failed to save preferences: %@", error.localizedDescription)
+            saveErrorMessage = error.localizedDescription
+        }
+    }
+
+    private var saveErrorPresented: Binding<Bool> {
+        Binding(
+            get: { saveErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    saveErrorMessage = nil
+                }
+            }
+        )
     }
 
     private func valueChip(_ text: String) -> some View {

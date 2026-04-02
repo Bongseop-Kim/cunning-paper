@@ -64,6 +64,19 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(index, 2)
     }
 
+    func testParagraphFocusReturnsPreviousParagraphForBlankLineBetweenParagraphs() {
+        let text = "First line\n\nSecond line"
+        let blankLineLocation = (text as NSString).range(of: "\n\n").location + 1
+        let index = ParagraphFocus.activeParagraphIndex(in: text, selectedRange: NSRange(location: blankLineLocation, length: 0))
+        XCTAssertEqual(index, 0)
+    }
+
+    func testParagraphFocusReturnsNextParagraphForLeadingBlankLine() {
+        let text = "\nFirst line\nSecond line"
+        let index = ParagraphFocus.activeParagraphIndex(in: text, selectedRange: NSRange(location: 0, length: 0))
+        XCTAssertEqual(index, 0)
+    }
+
     func testParagraphFocusPreviewWindowCentersOnActiveParagraph() {
         let paragraphs = ["One", "Two", "Three", "Four"]
         XCTAssertEqual(ParagraphFocus.previewWindowParagraphs(in: paragraphs, activeIndex: 2), ["Two", "Three", "Four"])
@@ -84,6 +97,26 @@ final class ModelTests: XCTestCase {
         hotkeys.next = "command+right"
         prefs.hotkeys = hotkeys
         XCTAssertEqual(prefs.hotkeys.next, "command+right")
+    }
+
+    func testTextSyncSelectionResetsForWholesaleReplacement() {
+        let selection = CardBodyTextView.synchronizedSelectionRange(
+            currentText: "Original document",
+            newText: "Completely different document",
+            currentSelection: NSRange(location: 8, length: 4)
+        )
+
+        XCTAssertEqual(selection, NSRange(location: 0, length: 0))
+    }
+
+    func testTextSyncSelectionPreservesRangeForIncrementalReplacement() {
+        let selection = CardBodyTextView.synchronizedSelectionRange(
+            currentText: "Hello",
+            newText: "Hello world",
+            currentSelection: NSRange(location: 5, length: 0)
+        )
+
+        XCTAssertEqual(selection, NSRange(location: 5, length: 0))
     }
 
     func testPrefsModelCustomPresetsRoundtrip() {

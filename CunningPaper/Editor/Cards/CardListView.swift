@@ -6,7 +6,7 @@ struct CardListView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \CardModel.order) private var cards: [CardModel]
     @Binding var selectedCardID: UUID?
-    @State private var deleteErrorMessage: String?
+    @State private var errorMessage: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -22,7 +22,7 @@ struct CardListView: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
 
-                        Text("\(card.paragraphCount) paragraphs")
+                        Text("^[\(card.paragraphCount) paragraph](inflect: true)")
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                     }
@@ -57,12 +57,12 @@ struct CardListView: View {
             .padding(.vertical, 10)
             .background(.bar)
         }
-        .alert("Couldn't Delete Card", isPresented: deleteErrorPresented) {
+        .alert("Couldn't Save Changes", isPresented: errorPresented) {
             Button("OK") {
-                deleteErrorMessage = nil
+                errorMessage = nil
             }
         } message: {
-            Text(deleteErrorMessage ?? "The card could not be deleted.")
+            Text(errorMessage ?? "The change could not be saved.")
         }
     }
 
@@ -87,7 +87,7 @@ struct CardListView: View {
         case .failure(let error):
             context.rollback()
             selectedCardID = previousSelection
-            deleteErrorMessage = error.localizedDescription
+            presentSaveError(error, fallbackMessage: "The card could not be deleted.")
             NSSound.beep()
         }
     }
@@ -98,7 +98,14 @@ struct CardListView: View {
         for (index, card) in reordered.enumerated() {
             card.order = Double(index)
         }
-        _ = saveContext()
+        switch saveContext() {
+        case .success:
+            break
+        case .failure(let error):
+            context.rollback()
+            presentSaveError(error, fallbackMessage: "The cards could not be reordered.")
+            NSSound.beep()
+        }
     }
 
     private func nextSelectionAfterDeletingCard(withID cardID: UUID) -> UUID? {
@@ -117,15 +124,21 @@ struct CardListView: View {
         return nil
     }
 
-    private var deleteErrorPresented: Binding<Bool> {
+    private var errorPresented: Binding<Bool> {
         Binding(
-            get: { deleteErrorMessage != nil },
+            get: { errorMessage != nil },
             set: { isPresented in
                 if !isPresented {
-                    deleteErrorMessage = nil
+                    errorMessage = nil
                 }
             }
         )
+    }
+
+    private func presentSaveError(_ error: Error, fallbackMessage: String) {
+        let description = error.localizedDescription
+        NSLog("Failed to save card list changes: %@", description)
+        errorMessage = description.isEmpty ? fallbackMessage : description
     }
 
     private func saveContext() -> Result<Void, Error> {
@@ -133,6 +146,7 @@ struct CardListView: View {
             try context.save()
             return .success(())
         } catch {
+            NSLog("Failed to save card list changes: %@", error.localizedDescription)
             assertionFailure("Failed to save card list changes: \(error)")
             return .failure(error)
         }

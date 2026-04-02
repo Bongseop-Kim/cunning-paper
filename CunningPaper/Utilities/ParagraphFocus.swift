@@ -2,8 +2,8 @@ import Foundation
 
 enum ParagraphFocus {
     static func activeParagraphIndex(in text: String, selectedRange: NSRange) -> Int? {
-        let paragraphs = filteredParagraphEntries(in: text)
-        guard !paragraphs.isEmpty else { return nil }
+        let paragraphs = paragraphEntries(in: text)
+        guard paragraphs.contains(where: \.isVisible) else { return nil }
 
         let textLength = (text as NSString).length
         let clampedLocation = max(0, min(selectedRange.location, textLength))
@@ -11,11 +11,11 @@ enum ParagraphFocus {
 
         for (index, entry) in paragraphs.enumerated() {
             if NSLocationInRange(targetLocation, entry.range) {
-                return index
+                return nearestVisibleParagraphIndex(around: index, in: paragraphs)
             }
         }
 
-        return paragraphs.indices.last
+        return paragraphs.indices.reversed().compactMap { paragraphs[$0].visibleIndex }.first
     }
 
     static func previewWindowParagraphs(in paragraphs: [String], activeIndex: Int?, radius: Int = 1) -> [String] {
@@ -55,18 +55,47 @@ enum ParagraphFocus {
         return safeIndex - lowerBound
     }
 
-    private static func filteredParagraphEntries(in text: String) -> [(text: String, range: NSRange)] {
+    private static func nearestVisibleParagraphIndex(
+        around index: Int,
+        in paragraphs: [ParagraphEntry]
+    ) -> Int? {
+        if let visibleIndex = paragraphs[index].visibleIndex {
+            return visibleIndex
+        }
+
+        for previousIndex in stride(from: index - 1, through: 0, by: -1) {
+            if let visibleIndex = paragraphs[previousIndex].visibleIndex {
+                return visibleIndex
+            }
+        }
+
+        for nextIndex in (index + 1)..<paragraphs.count {
+            if let visibleIndex = paragraphs[nextIndex].visibleIndex {
+                return visibleIndex
+            }
+        }
+
+        return nil
+    }
+
+    private static func paragraphEntries(in text: String) -> [ParagraphEntry] {
         let nsText = text as NSString
-        var results: [(text: String, range: NSRange)] = []
+        var results: [ParagraphEntry] = []
         var searchRange = NSRange(location: 0, length: nsText.length)
+        var visibleIndex = 0
 
         while searchRange.length > 0 {
             let paragraphRange = nsText.paragraphRange(for: NSRange(location: searchRange.location, length: 0))
             let paragraphText = nsText.substring(with: paragraphRange)
                 .trimmingCharacters(in: .whitespacesAndNewlines)
 
-            if !paragraphText.isEmpty {
-                results.append((text: paragraphText, range: paragraphRange))
+            let entry = ParagraphEntry(
+                range: paragraphRange,
+                visibleIndex: paragraphText.isEmpty ? nil : visibleIndex
+            )
+            results.append(entry)
+            if entry.isVisible {
+                visibleIndex += 1
             }
 
             let nextLocation = paragraphRange.location + paragraphRange.length
@@ -75,5 +104,14 @@ enum ParagraphFocus {
         }
 
         return results
+    }
+
+    private struct ParagraphEntry {
+        let range: NSRange
+        let visibleIndex: Int?
+
+        var isVisible: Bool {
+            visibleIndex != nil
+        }
     }
 }

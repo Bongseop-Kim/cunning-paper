@@ -22,6 +22,7 @@ struct CardDetailView: View {
                 text: textBinding(for: \.body),
                 onActiveParagraphChange: onActiveParagraphChange
             )
+            .id(card.id)
             .padding(.horizontal, 24)
             .padding(.bottom, 16)
         }

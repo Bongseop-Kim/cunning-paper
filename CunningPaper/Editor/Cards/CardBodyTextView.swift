@@ -40,9 +40,13 @@ struct CardBodyTextView: NSViewRepresentable {
         guard !textView.hasMarkedText() else { return }
 
         if textView.string != text {
-            let selectedRange = textView.selectedRange()
+            let selectedRange = Self.synchronizedSelectionRange(
+                currentText: textView.string,
+                newText: text,
+                currentSelection: textView.selectedRange()
+            )
             textView.string = text
-            textView.setSelectedRange(NSIntersectionRange(selectedRange, NSRange(location: 0, length: (text as NSString).length)))
+            textView.setSelectedRange(selectedRange)
         }
 
         DispatchQueue.main.async {
@@ -87,5 +91,27 @@ struct CardBodyTextView: NSViewRepresentable {
                 self?.onActiveParagraphChange(index)
             }
         }
+    }
+
+    static func synchronizedSelectionRange(
+        currentText: String,
+        newText: String,
+        currentSelection: NSRange
+    ) -> NSRange {
+        let newRange = NSRange(location: 0, length: (newText as NSString).length)
+        guard shouldPreserveSelection(currentText: currentText, newText: newText) else {
+            return NSRange(location: 0, length: 0)
+        }
+
+        return NSIntersectionRange(currentSelection, newRange)
+    }
+
+    private static func shouldPreserveSelection(currentText: String, newText: String) -> Bool {
+        guard !currentText.isEmpty, !newText.isEmpty else { return false }
+
+        return newText.hasPrefix(currentText)
+            || newText.hasSuffix(currentText)
+            || currentText.hasPrefix(newText)
+            || currentText.hasSuffix(newText)
     }
 }
