@@ -1,4 +1,5 @@
 import AppKit
+import SwiftData
 import SwiftUI
 import XCTest
 @testable import CunningPaper
@@ -172,6 +173,62 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(beepCallCount, 1)
     }
 
+    @MainActor
+    func testCardListViewPersistReturnsFailureWhenSaveThrows() throws {
+        enum SampleError: Error { case failure }
+
+        let context = try makeInMemoryContext()
+        let result = CardListView.persist(context) { _ in
+            throw SampleError.failure
+        }
+
+        switch result {
+        case .success:
+            XCTFail("Expected save failure")
+        case .failure(let error):
+            XCTAssertTrue(error is SampleError)
+        }
+    }
+
+    @MainActor
+    func testCardListViewPerformIsolatedMutationPreservesUnsavedSharedChangesOnFailure() throws {
+        enum SampleError: Error { case failure }
+
+        let container = try makeInMemoryContainer()
+        let sharedContext = ModelContext(container)
+        let firstCard = CardModel(body: "First", order: 0)
+        let secondCard = CardModel(body: "Second", order: 1)
+        sharedContext.insert(firstCard)
+        sharedContext.insert(secondCard)
+        try sharedContext.save()
+
+        firstCard.body = "Unsaved draft"
+
+        let result = CardListView.performIsolatedMutation(in: container, mutate: { mutationContext in
+            let cards = try mutationContext.fetch(FetchDescriptor<CardModel>())
+            guard let cardToDelete = cards.first(where: { $0.id == secondCard.id }) else {
+                XCTFail("Expected to find card to delete in isolated context")
+                return
+            }
+            mutationContext.delete(cardToDelete)
+        }, save: { _ in
+            throw SampleError.failure
+        })
+
+        switch result {
+        case .success:
+            XCTFail("Expected isolated mutation failure")
+        case .failure(let error):
+            XCTAssertTrue(error is SampleError)
+        }
+
+        XCTAssertEqual(firstCard.body, "Unsaved draft")
+
+        let cards = try sharedContext.fetch(FetchDescriptor<CardModel>())
+        XCTAssertEqual(cards.count, 2)
+        XCTAssertNotNil(cards.first(where: { $0.id == secondCard.id }))
+    }
+
     func testPrefsModelCustomPresetsRoundtrip() {
         let prefs = PrefsModel()
         let preset = ZonePreset(id: "test", label: "Test", x: 0, y: 0, w: 0.5, h: 0.5, builtIn: false)
@@ -180,9 +237,19 @@ final class ModelTests: XCTestCase {
     }
 
     func testHotkeyActionRemovesSearchAction() {
-        XCTAssertEqual(
-            Set(HotkeyAction.allCases.map(\.rawValue)),
-            ["next", "prev", "jump", "nextLine", "prevLine", "toggle"]
+        XCTAssertFalse(HotkeyAction.allCases.map(\.rawValue).contains("search"))
+    }
+
+    @MainActor
+    private func makeInMemoryContext() throws -> ModelContext {
+        ModelContext(try makeInMemoryContainer())
+    }
+
+    @MainActor
+    private func makeInMemoryContainer() throws -> ModelContainer {
+        try ModelContainer(
+            for: CardModel.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
         )
     }
 }

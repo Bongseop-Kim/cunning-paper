@@ -70,7 +70,7 @@ struct CardListView: View {
         let nextOrder = (cards.map(\.order).max() ?? -1) + 1
         let card = CardModel(body: "", order: nextOrder)
         context.insert(card)
-        switch saveContext() {
+        switch Self.persist(context) {
         case .success:
             selectedCardID = card.id
         case .failure(let error):
@@ -88,8 +88,13 @@ struct CardListView: View {
     private func deleteCard(_ card: CardModel) {
         let previousSelection = selectedCardID
         let nextSelection = nextSelectionAfterDeletingCard(withID: card.id)
-        context.delete(card)
-        switch saveContext() {
+        switch Self.performIsolatedMutation(in: context.container, mutate: { mutationContext in
+            let cards = try mutationContext.fetch(FetchDescriptor<CardModel>())
+            guard let cardToDelete = cards.first(where: { $0.id == card.id }) else {
+                return
+            }
+            mutationContext.delete(cardToDelete)
+        }) {
         case .success:
             selectedCardID = nextSelection
         case .failure(let error):
@@ -97,7 +102,6 @@ struct CardListView: View {
                 error,
                 fallbackMessage: "The card could not be deleted.",
                 rollback: {
-                    context.rollback()
                     selectedCardID = previousSelection
                 },
                 presentError: presentSaveError,
@@ -109,17 +113,21 @@ struct CardListView: View {
     private func moveCards(from source: IndexSet, to destination: Int) {
         var reordered = cards
         reordered.move(fromOffsets: source, toOffset: destination)
-        for (index, card) in reordered.enumerated() {
-            card.order = Double(index)
-        }
-        switch saveContext() {
+        let reorderedCardIDs = reordered.map(\.id)
+        switch Self.performIsolatedMutation(in: context.container, mutate: { mutationContext in
+            let cards = try mutationContext.fetch(FetchDescriptor<CardModel>())
+            let cardsByID = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, $0) })
+            for (index, id) in reorderedCardIDs.enumerated() {
+                cardsByID[id]?.order = Double(index)
+            }
+        }) {
         case .success:
             break
         case .failure(let error):
             Self.handleMutationSaveFailure(
                 error,
                 fallbackMessage: "The cards could not be reordered.",
-                rollback: { context.rollback() },
+                rollback: {},
                 presentError: presentSaveError,
                 playFailureSound: { NSSound.beep() }
             )
@@ -170,13 +178,30 @@ struct CardListView: View {
         playFailureSound()
     }
 
-    private func saveContext() -> Result<Void, Error> {
+    static func performIsolatedMutation(
+        in container: ModelContainer,
+        mutate: (ModelContext) throws -> Void,
+        save: (ModelContext) throws -> Void = { try $0.save() }
+    ) -> Result<Void, Error> {
+        let mutationContext = ModelContext(container)
         do {
-            try context.save()
+            try mutate(mutationContext)
+            return persist(mutationContext, save: save)
+        } catch {
+            mutationContext.rollback()
+            return .failure(error)
+        }
+    }
+
+    static func persist(
+        _ context: ModelContext,
+        save: (ModelContext) throws -> Void = { try $0.save() }
+    ) -> Result<Void, Error> {
+        do {
+            try save(context)
             return .success(())
         } catch {
             NSLog("Failed to save card list changes: %@", error.localizedDescription)
-            assertionFailure("Failed to save card list changes: \(error)")
             return .failure(error)
         }
     }
