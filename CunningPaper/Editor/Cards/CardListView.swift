@@ -3,6 +3,17 @@ import SwiftData
 import SwiftUI
 
 struct CardListView: View {
+    enum MutationError: LocalizedError {
+        case cardNotFound(UUID)
+
+        var errorDescription: String? {
+            switch self {
+            case .cardNotFound(let id):
+                return "Card not found for deletion: \(id.uuidString)"
+            }
+        }
+    }
+
     @Environment(\.modelContext) private var context
     @Query(sort: \CardModel.order) private var cards: [CardModel]
     @Binding var selectedCardID: UUID?
@@ -89,11 +100,7 @@ struct CardListView: View {
         let previousSelection = selectedCardID
         let nextSelection = nextSelectionAfterDeletingCard(withID: card.id)
         switch Self.performIsolatedMutation(in: context.container, mutate: { mutationContext in
-            let cards = try mutationContext.fetch(FetchDescriptor<CardModel>())
-            guard let cardToDelete = cards.first(where: { $0.id == card.id }) else {
-                return
-            }
-            mutationContext.delete(cardToDelete)
+            try Self.deleteCard(withID: card.id, in: mutationContext)
         }) {
         case .success:
             selectedCardID = nextSelection
@@ -108,6 +115,14 @@ struct CardListView: View {
                 playFailureSound: { NSSound.beep() }
             )
         }
+    }
+
+    static func deleteCard(withID cardID: UUID, in mutationContext: ModelContext) throws {
+        let cards = try mutationContext.fetch(FetchDescriptor<CardModel>())
+        guard let cardToDelete = cards.first(where: { $0.id == cardID }) else {
+            throw MutationError.cardNotFound(cardID)
+        }
+        mutationContext.delete(cardToDelete)
     }
 
     private func moveCards(from source: IndexSet, to destination: Int) {

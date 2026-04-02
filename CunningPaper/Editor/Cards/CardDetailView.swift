@@ -57,14 +57,7 @@ struct CardDetailView: View {
         Binding(
             get: { card[keyPath: keyPath] },
             set: { newValue in
-                let previousValue = card[keyPath: keyPath]
-                let previousUpdatedAt = card.updatedAt
-                card[keyPath: keyPath] = newValue
-                card.updatedAt = Date()
-                saveCardMutation {
-                    card[keyPath: keyPath] = previousValue
-                    card.updatedAt = previousUpdatedAt
-                }
+                Self.applyTextChange(newValue, for: keyPath, on: card, save: saveCardMutation)
             }
         )
     }
@@ -91,9 +84,37 @@ struct CardDetailView: View {
     }
 
     private func presentSaveError(_ error: Error, fallbackMessage: String) {
-        let description = error.localizedDescription
-        Self.logger.error("Failed to save card changes: \(String(describing: error), privacy: .public)")
+        let details = Self.logSafeSaveErrorDetails(for: error)
+        Self.logger.error(
+            "Failed to save card changes: domain=\(details.domain, privacy: .public) code=\(details.code, privacy: .public) description=\(details.description, privacy: .private)"
+        )
+        let description = details.description
         saveErrorMessage = description.isEmpty ? fallbackMessage : description
+    }
+
+    static func applyTextChange(
+        _ newValue: String,
+        for keyPath: ReferenceWritableKeyPath<CardModel, String>,
+        on card: CardModel,
+        save: (@escaping () -> Void) -> Void
+    ) {
+        let previousValue = card[keyPath: keyPath]
+        guard previousValue != newValue else {
+            return
+        }
+
+        let previousUpdatedAt = card.updatedAt
+        card[keyPath: keyPath] = newValue
+        card.updatedAt = Date()
+        save {
+            card[keyPath: keyPath] = previousValue
+            card.updatedAt = previousUpdatedAt
+        }
+    }
+
+    static func logSafeSaveErrorDetails(for error: Error) -> (domain: String, code: Int, description: String) {
+        let nsError = error as NSError
+        return (nsError.domain, nsError.code, error.localizedDescription)
     }
 
     static func resetActiveParagraph(using onActiveParagraphChange: (Int?) -> Void) {

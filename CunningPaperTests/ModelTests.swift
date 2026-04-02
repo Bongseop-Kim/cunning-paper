@@ -150,6 +150,39 @@ final class ModelTests: XCTestCase {
         XCTAssertNil(reportedParagraph)
     }
 
+    func testCardDetailViewApplyTextChangeSkipsEqualValue() {
+        let timestamp = Date(timeIntervalSinceReferenceDate: 1234)
+        let card = CardModel(body: "Same text", updatedAt: timestamp)
+        var saveCallCount = 0
+
+        CardDetailView.applyTextChange(
+            "Same text",
+            for: \.body,
+            on: card,
+            save: { _ in
+                saveCallCount += 1
+            }
+        )
+
+        XCTAssertEqual(card.body, "Same text")
+        XCTAssertEqual(card.updatedAt, timestamp)
+        XCTAssertEqual(saveCallCount, 0)
+    }
+
+    func testCardDetailViewLogSafeSaveErrorDetailsUsesNSErrorIdentifiers() {
+        let error = NSError(
+            domain: "CardSaveDomain",
+            code: 99,
+            userInfo: [NSLocalizedDescriptionKey: "Detailed failure message"]
+        )
+
+        let details = CardDetailView.logSafeSaveErrorDetails(for: error)
+
+        XCTAssertEqual(details.domain, "CardSaveDomain")
+        XCTAssertEqual(details.code, 99)
+        XCTAssertEqual(details.description, "Detailed failure message")
+    }
+
     func testCardListViewHandleMutationSaveFailurePresentsErrorAndBeeps() {
         enum SampleError: Error { case failure }
 
@@ -227,6 +260,26 @@ final class ModelTests: XCTestCase {
         let cards = try sharedContext.fetch(FetchDescriptor<CardModel>())
         XCTAssertEqual(cards.count, 2)
         XCTAssertNotNil(cards.first(where: { $0.id == secondCard.id }))
+    }
+
+    @MainActor
+    func testCardListViewDeleteCardThrowsWhenCardMissing() throws {
+        let container = try makeInMemoryContainer()
+        let cardID = UUID()
+
+        let result = CardListView.performIsolatedMutation(in: container, mutate: { mutationContext in
+            try CardListView.deleteCard(withID: cardID, in: mutationContext)
+        })
+
+        switch result {
+        case .success:
+            XCTFail("Expected delete failure when card is missing")
+        case .failure(let error):
+            guard case CardListView.MutationError.cardNotFound(let missingID) = error else {
+                return XCTFail("Expected cardNotFound error, got \(error)")
+            }
+            XCTAssertEqual(missingID, cardID)
+        }
     }
 
     func testPrefsModelCustomPresetsRoundtrip() {
