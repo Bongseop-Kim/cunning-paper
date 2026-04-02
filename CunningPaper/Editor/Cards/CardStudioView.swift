@@ -11,7 +11,6 @@ struct CardStudioView: View {
     }
 
     private func selectCard(_ id: UUID) {
-        activeParagraphIndex = 0
         selectedCardID = id
     }
 

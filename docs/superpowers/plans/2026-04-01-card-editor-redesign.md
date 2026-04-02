@@ -55,17 +55,35 @@ Add these tests to `CunningPaperTests/ModelTests.swift`:
 
 ```swift
 func testCardModelPreviewLineUsesFirstParagraph() {
-    let card = CardModel(title: "T", body: "first line\nsecond line")
+    let card = CardModel(
+        id: UUID(),
+        body: "first line\nsecond line",
+        order: 0,
+        createdAt: Date(),
+        updatedAt: Date()
+    )
     XCTAssertEqual(card.previewLine, "first line")
 }
 
 func testCardModelPreviewLineFallsBackWhenBodyEmpty() {
-    let card = CardModel(title: "T", body: "")
+    let card = CardModel(
+        id: UUID(),
+        body: "",
+        order: 0,
+        createdAt: Date(),
+        updatedAt: Date()
+    )
     XCTAssertEqual(card.previewLine, "Empty card")
 }
 
 func testCardModelParagraphCountMatchesParagraphs() {
-    let card = CardModel(title: "T", body: "one\n\ntwo")
+    let card = CardModel(
+        id: UUID(),
+        body: "one\n\ntwo",
+        order: 0,
+        createdAt: Date(),
+        updatedAt: Date()
+    )
     XCTAssertEqual(card.paragraphCount, 2)
 }
 ```

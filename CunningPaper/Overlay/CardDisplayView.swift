@@ -23,12 +23,12 @@ struct CardDisplayView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            .mask(bottomFadeMask)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(.horizontal, horizontalPadding)
         .padding(.vertical, verticalPadding)
         .clipped()
+        .mask(bottomFadeMask)
     }
 
     private func foregroundColor(for index: Int) -> Color {

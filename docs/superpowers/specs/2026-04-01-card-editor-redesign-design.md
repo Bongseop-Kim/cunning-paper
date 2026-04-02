@@ -44,7 +44,7 @@ Quiet, editorial, and deliberate. The editor should feel closer to a reading con
 
 - left pane: scan and select cards quickly
 - right top: see how the current card reads
-- right bottom: edit title and body with minimal friction
+- right bottom: edit the card body with minimal friction
 
 Each region gets one job only.
 
@@ -134,8 +134,8 @@ Responsibility:
 
 Changes:
 
-- add a thin meta header above the title field
-- enlarge the title field presence
+- add a thin meta header above the body editor
+- give the body editor clear focus in the writing surface
 - give the body more comfortable inset and line rhythm
 - reduce reliance on `Divider`
 - move destructive action into a lower-emphasis control, ideally menu or toolbar placement
@@ -158,7 +158,7 @@ Changes:
 
 ## Card list
 
-- every row should communicate title first
+- every row should communicate the first body phrase first
 - supporting text must be short enough to scan in one glance
 - avoid heavy background fills on every row
 - the selected row should feel anchored, not highlighted like a generic sidebar item
@@ -166,13 +166,13 @@ Changes:
 ## Preview pane
 
 - preview must feel like the product hero inside the editor
-- title should be present but secondary to the reading body
+- body text should be the only authored content in the preview
 - paragraph emphasis should be noticeable but calm
 - the preview should not look like a fake screenshot or a separate app
 
 ## Form pane
 
-- title entry should feel intentional and editorial
+- body entry should feel intentional and editorial
 - body editing should prioritize legibility over decoration
 - destructive actions should not sit in the main reading flow
 
@@ -205,7 +205,7 @@ Motion should stay restrained and short.
 Recommended:
 
 - card selection: short fade between preview states
-- new card creation: immediate focus transition into the title field
+- new card creation: immediate focus transition into the body editor
 - selection emphasis: subtle state change, not animated spectacle
 
 Avoid:

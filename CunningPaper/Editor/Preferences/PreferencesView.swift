@@ -165,6 +165,9 @@ struct PreferencesView: View {
 
             Slider(value: value, in: range, step: step)
                 .tint(.accentColor)
+                .accessibilityLabel(title)
+                .accessibilityValue(valueText)
+                .accessibilityHint(detail)
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 16)
@@ -193,6 +196,8 @@ struct PreferencesView: View {
             Toggle("", isOn: isOn)
                 .labelsHidden()
                 .toggleStyle(.switch)
+                .accessibilityLabel(title)
+                .accessibilityHint(detail)
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 16)

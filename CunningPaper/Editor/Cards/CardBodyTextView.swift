@@ -28,10 +28,6 @@ struct CardBodyTextView: NSViewRepresentable {
 
         scrollView.documentView = textView
 
-        DispatchQueue.main.async {
-            context.coordinator.reportSelection(for: textView)
-        }
-
         return scrollView
     }
 

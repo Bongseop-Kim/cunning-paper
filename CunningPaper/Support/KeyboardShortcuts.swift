@@ -69,7 +69,7 @@ enum KeyboardShortcuts {
     static func startMonitoring() {
         installCarbonEventHandler()
         for name in handlers.keys {
-            registerHotKey(for: name)
+            _ = registerHotKey(for: name)
         }
     }
 
@@ -112,13 +112,18 @@ enum KeyboardShortcuts {
         )
     }
 
-    private static func registerHotKey(for name: Name) {
+    private static func unregisterHotKey(for name: Name) {
         if let existing = hotKeyRefs[name] {
             UnregisterEventHotKey(existing)
             hotKeyRefs.removeValue(forKey: name)
-            nameForID = nameForID.filter { $0.value != name }
         }
-        guard let sc = Shortcut.from(shortcutString(for: name)) else { return }
+        nameForID = nameForID.filter { $0.value != name }
+    }
+
+    @discardableResult
+    private static func registerHotKey(for name: Name) -> Bool {
+        unregisterHotKey(for: name)
+        guard let sc = Shortcut.from(shortcutString(for: name)) else { return true }
 
         var id = EventHotKeyID()
         id.signature = "cpap".utf8.prefix(4).reduce(0) { $0 << 8 | FourCharCode($1) }
@@ -134,10 +139,13 @@ enum KeyboardShortcuts {
             0,
             &ref
         )
-        if status == noErr, let ref {
-            hotKeyRefs[name] = ref
-            nameForID[id.id] = name
+        guard status == noErr, let ref else {
+            unregisterHotKey(for: name)
+            return false
         }
+        hotKeyRefs[name] = ref
+        nameForID[id.id] = name
+        return true
     }
 
     private static func carbonModifiers(from flags: NSEvent.ModifierFlags) -> UInt32 {
@@ -153,11 +161,7 @@ enum KeyboardShortcuts {
         let defaults = UserDefaults.standard
         for name in names {
             defaults.removeObject(forKey: storageKey(for: name))
-            if let ref = hotKeyRefs[name] {
-                UnregisterEventHotKey(ref)
-                hotKeyRefs.removeValue(forKey: name)
-                nameForID = nameForID.filter { $0.value != name }
-            }
+            unregisterHotKey(for: name)
         }
     }
 
@@ -165,9 +169,24 @@ enum KeyboardShortcuts {
         UserDefaults.standard.string(forKey: storageKey(for: name)) ?? ""
     }
 
-    static func setShortcutString(_ value: String, for name: Name) {
-        UserDefaults.standard.set(value, forKey: storageKey(for: name))
-        registerHotKey(for: name)
+    @discardableResult
+    static func setShortcutString(_ value: String, for name: Name) -> Bool {
+        let defaults = UserDefaults.standard
+        let key = storageKey(for: name)
+        let previousValue = defaults.string(forKey: key)
+
+        defaults.set(value, forKey: key)
+        guard registerHotKey(for: name) else {
+            if let previousValue {
+                defaults.set(previousValue, forKey: key)
+            } else {
+                defaults.removeObject(forKey: key)
+            }
+            _ = registerHotKey(for: name)
+            NSSound.beep()
+            return false
+        }
+        return true
     }
 
     private static func storageKey(for name: Name) -> String {
@@ -190,7 +209,10 @@ enum KeyboardShortcuts {
                 }
                 .onChange(of: shortcut) { _, newValue in
                     if let sc = newValue {
-                        KeyboardShortcuts.setShortcutString(sc.storageString, for: name)
+                        guard KeyboardShortcuts.setShortcutString(sc.storageString, for: name) else {
+                            shortcut = Shortcut.from(KeyboardShortcuts.shortcutString(for: name))
+                            return
+                        }
                     } else {
                         KeyboardShortcuts.reset(name)
                     }
@@ -279,6 +301,10 @@ private final class KeyRecorderNSView: NSView {
         guard !Self.modifierKeyCodes.contains(event.keyCode) else { return }
 
         let mods = event.modifierFlags.intersection([.command, .option, .shift, .control])
+        guard !mods.isEmpty else {
+            NSSound.beep()
+            return
+        }
         let sc = KeyboardShortcuts.Shortcut(keyCode: event.keyCode, modifiers: mods)
         shortcut = sc
         onShortcutChanged?(sc)

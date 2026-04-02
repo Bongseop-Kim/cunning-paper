@@ -74,10 +74,6 @@ enum ParagraphFocus {
             searchRange = NSRange(location: nextLocation, length: nsText.length - nextLocation)
         }
 
-        if nsText.length == 0 {
-            return []
-        }
-
         return results
     }
 }

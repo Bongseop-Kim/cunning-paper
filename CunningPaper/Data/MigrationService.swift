@@ -35,8 +35,8 @@ struct DefaultLegacyCardFileHandling: LegacyCardFileHandling {
 enum MigrationService {
     private static let migrationKey = "cunningPaper.migration.v1.complete"
 
-    static func needsMigration() -> Bool {
-        !UserDefaults.standard.bool(forKey: migrationKey)
+    static func needsMigration(userDefaults: UserDefaults = .standard) -> Bool {
+        !userDefaults.bool(forKey: migrationKey)
     }
 
     static func legacyCardsPath() -> URL? {
@@ -111,11 +111,21 @@ enum MigrationService {
     private static func normalizedImportedBody(body: String, title: String?) -> String {
         let trimmedBody = body.trimmingCharacters(in: .whitespacesAndNewlines)
         if !trimmedBody.isEmpty {
-            return body
+            return trimmedBody
         }
 
         let trimmedTitle = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         return trimmedTitle
+    }
+
+    private static func rollbackImportedCards(
+        _ importedCards: [CardModel],
+        in context: ModelContext
+    ) throws {
+        for card in importedCards {
+            context.delete(card)
+        }
+        try context.save()
     }
 
     private static func parseLegacyDate(
@@ -170,13 +180,26 @@ enum MigrationService {
             importedCards = cards
 
             let backupURL = nextBackupURL(for: path, using: fileHandler)
-            try fileHandler.moveItem(at: path, to: backupURL)
+            do {
+                try fileHandler.moveItem(at: path, to: backupURL)
+            } catch {
+                do {
+                    try rollbackImportedCards(importedCards, in: context)
+                    importedCards.removeAll()
+                } catch {
+                    assertionFailure("Failed to roll back imported cards after backup move failure: \(error)")
+                }
+                return
+            }
 
             userDefaults.set(true, forKey: migrationKey)
         } catch {
             if !importedCards.isEmpty {
-                importedCards.forEach { context.delete($0) }
-                try? context.save()
+                do {
+                    try rollbackImportedCards(importedCards, in: context)
+                } catch {
+                    assertionFailure("Failed to roll back imported cards: \(error)")
+                }
             }
             return
         }

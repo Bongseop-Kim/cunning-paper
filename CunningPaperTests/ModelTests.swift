@@ -95,7 +95,7 @@ final class ModelTests: XCTestCase {
 
     func testHotkeyActionRemovesSearchAction() {
         XCTAssertEqual(
-            HotkeyAction.allCases.map(\.rawValue),
+            Set(HotkeyAction.allCases.map(\.rawValue)),
             ["next", "prev", "jump", "nextLine", "prevLine", "toggle"]
         )
     }

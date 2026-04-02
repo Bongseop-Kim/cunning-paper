@@ -64,7 +64,7 @@ func testCardModelListHeadlineUsesFirstWord() {
 func testCardModelListHeadlineFallsBackForEmptyBody() {
     let card = CardModel(body: "   \n\t")
     XCTAssertEqual(card.listHeadline, "Empty")
-    XCTAssertEqual(card.previewLine, "Empty card")
+    XCTAssertEqual(card.listSubheadline, "Empty card")
 }
 
 func testCardModelListSubheadlineUsesFirstLine() {
@@ -89,7 +89,7 @@ func testParseCardsJSONReturnsBodyOnlyCards() throws {
 Run:
 
 ```bash
-xcodebuild test -project /Users/gimbongseob/git/cunning-paper/CunningPaper.xcodeproj -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath /tmp/CunningPaperDerivedData -only-testing:CunningPaperTests/ModelTests -only-testing:CunningPaperTests/MigrationServiceTests
+xcodebuild test -project "$PWD/CunningPaper.xcodeproj" -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath "${DERIVED_DATA_DIR:-/tmp/CunningPaperDerivedData}" -only-testing:CunningPaperTests/ModelTests -only-testing:CunningPaperTests/MigrationServiceTests
 ```
 
 Expected: FAIL because `CardModel` still requires `title`, the new helper properties do not exist, and the migration test still expects `title`.
@@ -153,7 +153,7 @@ return legacyCards.map { legacyCard in
 Run:
 
 ```bash
-xcodebuild test -project /Users/gimbongseob/git/cunning-paper/CunningPaper.xcodeproj -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath /tmp/CunningPaperDerivedData -only-testing:CunningPaperTests/ModelTests -only-testing:CunningPaperTests/MigrationServiceTests
+xcodebuild test -project "$PWD/CunningPaper.xcodeproj" -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath "${DERIVED_DATA_DIR:-/tmp/CunningPaperDerivedData}" -only-testing:CunningPaperTests/ModelTests -only-testing:CunningPaperTests/MigrationServiceTests
 ```
 
 Expected: PASS for `ModelTests` and `MigrationServiceTests`.
@@ -191,7 +191,7 @@ Write down the exact manual checks in the working notes or commit message draft 
 Run:
 
 ```bash
-xcodebuild -project /Users/gimbongseob/git/cunning-paper/CunningPaper.xcodeproj -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath /tmp/CunningPaperDerivedData build
+xcodebuild -project "$PWD/CunningPaper.xcodeproj" -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath "${DERIVED_DATA_DIR:-/tmp/CunningPaperDerivedData}" build
 ```
 
 Expected: BUILD SUCCEEDED before UI edits, giving you a clean baseline.
@@ -283,7 +283,7 @@ let card = CardModel(body: sample, order: startOrder + Double(index))
 Run:
 
 ```bash
-xcodebuild -project /Users/gimbongseob/git/cunning-paper/CunningPaper.xcodeproj -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath /tmp/CunningPaperDerivedData build
+xcodebuild -project "$PWD/CunningPaper.xcodeproj" -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath "${DERIVED_DATA_DIR:-/tmp/CunningPaperDerivedData}" build
 ```
 
 Expected: BUILD SUCCEEDED.
@@ -318,7 +318,7 @@ git commit -m "refactor: make editor cards body-first"
 Because there are no overlay interaction tests yet, create a static verification step by searching for references that must disappear:
 
 ```bash
-rg -n "case search|\\.search\\b|SearchPanelView|titleScale|titleOpacity|let title: String|displayTitle" /Users/gimbongseob/git/cunning-paper/CunningPaper -S
+rg -n "case search|\\.search\\b|SearchPanelView|titleScale|titleOpacity|let title: String|displayTitle" "$PWD/CunningPaper" -S
 ```
 
 Expected before implementation: matches in overlay, hotkey, preferences, and search panel files.
@@ -328,7 +328,7 @@ Expected before implementation: matches in overlay, hotkey, preferences, and sea
 Run the same command:
 
 ```bash
-rg -n "case search|\\.search\\b|SearchPanelView|titleScale|titleOpacity|let title: String|displayTitle" /Users/gimbongseob/git/cunning-paper/CunningPaper -S
+rg -n "case search|\\.search\\b|SearchPanelView|titleScale|titleOpacity|let title: String|displayTitle" "$PWD/CunningPaper" -S
 ```
 
 Expected: non-empty output proving the old search/title plumbing is still present.
@@ -432,8 +432,8 @@ Then delete `CunningPaper/Overlay/SearchPanelView.swift` and remove its referenc
 Run:
 
 ```bash
-rg -n "case search|\\.search\\b|SearchPanelView|titleScale|titleOpacity|let title: String|displayTitle" /Users/gimbongseob/git/cunning-paper/CunningPaper -S
-xcodebuild -project /Users/gimbongseob/git/cunning-paper/CunningPaper.xcodeproj -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath /tmp/CunningPaperDerivedData build
+rg -n "case search|\\.search\\b|SearchPanelView|titleScale|titleOpacity|let title: String|displayTitle" "$PWD/CunningPaper" -S
+xcodebuild -project "$PWD/CunningPaper.xcodeproj" -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath "${DERIVED_DATA_DIR:-/tmp/CunningPaperDerivedData}" build
 ```
 
 Expected:
@@ -467,7 +467,7 @@ git commit -m "refactor: remove overlay card search"
 Run:
 
 ```bash
-xcodebuild test -project /Users/gimbongseob/git/cunning-paper/CunningPaper.xcodeproj -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath /tmp/CunningPaperDerivedData -only-testing:CunningPaperTests/ModelTests -only-testing:CunningPaperTests/MigrationServiceTests
+xcodebuild test -project "$PWD/CunningPaper.xcodeproj" -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath "${DERIVED_DATA_DIR:-/tmp/CunningPaperDerivedData}" -only-testing:CunningPaperTests/ModelTests -only-testing:CunningPaperTests/MigrationServiceTests
 ```
 
 Expected: TEST SUCCEEDED.
@@ -477,7 +477,7 @@ Expected: TEST SUCCEEDED.
 Run:
 
 ```bash
-rg -n "displayTitle|Card title|SearchPanelView|cunningPaper\\.search|titleScale|titleOpacity" /Users/gimbongseob/git/cunning-paper/CunningPaper -S
+rg -n "displayTitle|Card title|SearchPanelView|cunningPaper\\.search|titleScale|titleOpacity" "$PWD/CunningPaper" -S
 ```
 
 Expected: no matches.
@@ -487,7 +487,7 @@ Expected: no matches.
 Run:
 
 ```bash
-xcodebuild -project /Users/gimbongseob/git/cunning-paper/CunningPaper.xcodeproj -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath /tmp/CunningPaperDerivedData build
+xcodebuild -project "$PWD/CunningPaper.xcodeproj" -scheme CunningPaper -destination 'platform=macOS' -derivedDataPath "${DERIVED_DATA_DIR:-/tmp/CunningPaperDerivedData}" build
 ```
 
 Expected: BUILD SUCCEEDED.

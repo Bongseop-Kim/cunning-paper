@@ -85,7 +85,7 @@ The detail pane should contain:
 
 - paragraph count header
 - body editor
-- existing delete affordance
+- delete actions exposed from the card row context menu rather than the detail pane
 
 The user edits only body text.
 
@@ -134,7 +134,7 @@ After this change, overlay navigation consists only of:
 
 - remove title `TextField`
 - stop creating bindings for title mutations
-- continue saving body edits and delete actions
+- continue saving body edits while leaving delete in the row context menu flow
 
 ## `CardStudioView`
 

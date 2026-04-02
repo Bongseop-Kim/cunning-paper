@@ -42,8 +42,8 @@ final class MigrationServiceTests: XCTestCase {
             url: storeURL
         )
 
-        XCTAssertNoThrow(
-            try ModelContainer(
+        let currentContainer = try XCTUnwrap(
+            try? ModelContainer(
                 for: Schema([
                     CardModel.self,
                     PrefsModel.self,
@@ -51,6 +51,10 @@ final class MigrationServiceTests: XCTestCase {
                 configurations: [currentConfig]
             )
         )
+        let currentContext = ModelContext(currentContainer)
+        let cards = try currentContext.fetch(FetchDescriptor<CardModel>())
+        XCTAssertEqual(cards.count, 1)
+        XCTAssertEqual(cards.first?.body, "Persisted body")
     }
 
     func testParseCardsJSONReturnsCards() throws {
@@ -103,6 +107,16 @@ final class MigrationServiceTests: XCTestCase {
         XCTAssertEqual(cards[0].body, "Legacy intro")
         XCTAssertEqual(cards[0].listHeadline, "Legacy")
         XCTAssertEqual(cards[0].listSubheadline, "Legacy intro")
+    }
+
+    func testParseCardsJSONTrimsNonEmptyLegacyBody() throws {
+        let json = """
+        [{"id":"550e8400-e29b-41d4-a716-446655440000","title":"Intro","body":"  Hello world\\nSecond line  ","order":0,"createdAt":"2024-01-01T00:00:00Z","updatedAt":"2024-01-01T00:00:00Z"}]
+        """
+
+        let cards = try MigrationService.parseCardsJSON(Data(json.utf8))
+        XCTAssertEqual(cards.count, 1)
+        XCTAssertEqual(cards[0].body, "Hello world\nSecond line")
     }
 
     func testParseCardsJSONEmptyArray() throws {
@@ -279,10 +293,11 @@ final class MigrationServiceTests: XCTestCase {
     }
 
     func testNeedsMigrationFalseWhenAlreadyDone() {
-        let defaults = UserDefaults.standard
-        defer { defaults.removeObject(forKey: "cunningPaper.migration.v1.complete") }
+        let suiteName = "MigrationServiceTests.needsMigration.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
         defaults.set(true, forKey: "cunningPaper.migration.v1.complete")
-        XCTAssertFalse(MigrationService.needsMigration())
+        XCTAssertFalse(MigrationService.needsMigration(userDefaults: defaults))
     }
 
     private func makeMigrationDefaults() -> (defaults: UserDefaults, suiteName: String) {

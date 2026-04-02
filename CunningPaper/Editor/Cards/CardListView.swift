@@ -1,3 +1,4 @@
+import AppKit
 import SwiftData
 import SwiftUI
 
@@ -5,6 +6,7 @@ struct CardListView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \CardModel.order) private var cards: [CardModel]
     @Binding var selectedCardID: UUID?
+    @State private var deleteErrorMessage: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -55,13 +57,20 @@ struct CardListView: View {
             .padding(.vertical, 10)
             .background(.bar)
         }
+        .alert("Couldn't Delete Card", isPresented: deleteErrorPresented) {
+            Button("OK") {
+                deleteErrorMessage = nil
+            }
+        } message: {
+            Text(deleteErrorMessage ?? "The card could not be deleted.")
+        }
     }
 
     private func addBlankCard() {
         let nextOrder = (cards.map(\.order).max() ?? -1) + 1
         let card = CardModel(body: "", order: nextOrder)
         context.insert(card)
-        guard saveContext() else {
+        guard case .success = saveContext() else {
             context.delete(card)
             return
         }
@@ -69,20 +78,18 @@ struct CardListView: View {
     }
 
     private func deleteCard(_ card: CardModel) {
-        if selectedCardID == card.id {
-            let index = cards.firstIndex(where: { $0.id == card.id })
-            if let index {
-                if index + 1 < cards.count {
-                    selectedCardID = cards[index + 1].id
-                } else if index - 1 >= 0 {
-                    selectedCardID = cards[index - 1].id
-                } else {
-                    selectedCardID = nil
-                }
-            }
-        }
+        let previousSelection = selectedCardID
+        let nextSelection = nextSelectionAfterDeletingCard(withID: card.id)
         context.delete(card)
-        _ = saveContext()
+        switch saveContext() {
+        case .success:
+            selectedCardID = nextSelection
+        case .failure(let error):
+            context.rollback()
+            selectedCardID = previousSelection
+            deleteErrorMessage = error.localizedDescription
+            NSSound.beep()
+        }
     }
 
     private func moveCards(from source: IndexSet, to destination: Int) {
@@ -94,13 +101,40 @@ struct CardListView: View {
         _ = saveContext()
     }
 
-    private func saveContext() -> Bool {
+    private func nextSelectionAfterDeletingCard(withID cardID: UUID) -> UUID? {
+        guard selectedCardID == cardID,
+              let index = cards.firstIndex(where: { $0.id == cardID })
+        else {
+            return selectedCardID
+        }
+
+        if index + 1 < cards.count {
+            return cards[index + 1].id
+        }
+        if index - 1 >= 0 {
+            return cards[index - 1].id
+        }
+        return nil
+    }
+
+    private var deleteErrorPresented: Binding<Bool> {
+        Binding(
+            get: { deleteErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    deleteErrorMessage = nil
+                }
+            }
+        )
+    }
+
+    private func saveContext() -> Result<Void, Error> {
         do {
             try context.save()
-            return true
+            return .success(())
         } catch {
             assertionFailure("Failed to save card list changes: \(error)")
-            return false
+            return .failure(error)
         }
     }
 }
