@@ -2,6 +2,10 @@ import XCTest
 @testable import CunningPaper
 
 final class ZonePickerPresentationTests: XCTestCase {
+    func testPositionHeaderUsesIntrinsicPickerWidthForMultipleMonitors() {
+        XCTAssertNil(PositionHeaderView.monitorPickerWidth(for: 2))
+    }
+
     func testSummaryLabelMatchesBuiltInLeftHalf() {
         let label = ZonePickerPresentation.summaryLabel(
             for: DisplayRect(x: 0, y: 0, w: 200, h: 400),

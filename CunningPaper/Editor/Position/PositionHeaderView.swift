@@ -7,6 +7,10 @@ struct PositionHeaderView: View {
     let monitor: MonitorInfo?
     let summary: String
 
+    static func monitorPickerWidth(for monitorCount: Int) -> CGFloat? {
+        nil
+    }
+
     var body: some View {
         HStack(alignment: .top, spacing: 20) {
             VStack(alignment: .leading, spacing: 6) {
@@ -31,7 +35,8 @@ struct PositionHeaderView: View {
                         }
                     }
                     .labelsHidden()
-                    .frame(width: 190)
+                    .fixedSize()
+                    .frame(width: Self.monitorPickerWidth(for: monitors.count))
                 } else {
                     Text(monitor?.name ?? "No display")
                         .font(.headline)
