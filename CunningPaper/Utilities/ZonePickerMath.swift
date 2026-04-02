@@ -27,11 +27,12 @@ enum ZonePickerMath {
         canvasWidth: CGFloat
     ) -> PhysicalBounds {
         let scale = minimapScale(monitor: monitor, displayWidth: canvasWidth)
+        let physicalHeight = (rect.h / scale).rounded()
         return PhysicalBounds(
             x: (rect.x / scale + CGFloat(monitor.x)).rounded(),
-            y: (rect.y / scale + CGFloat(monitor.y)).rounded(),
+            y: (CGFloat(monitor.y) + CGFloat(monitor.height) - ((rect.y + rect.h) / scale)).rounded(),
             width: (rect.w / scale).rounded(),
-            height: (rect.h / scale).rounded()
+            height: physicalHeight
         )
     }
 
@@ -43,7 +44,7 @@ enum ZonePickerMath {
         let scale = minimapScale(monitor: monitor, displayWidth: canvasWidth)
         return DisplayRect(
             x: ((bounds.x - CGFloat(monitor.x)) * scale).rounded(),
-            y: ((bounds.y - CGFloat(monitor.y)) * scale).rounded(),
+            y: ((CGFloat(monitor.height) - (bounds.y - CGFloat(monitor.y)) - bounds.height) * scale).rounded(),
             w: (bounds.width * scale).rounded(),
             h: (bounds.height * scale).rounded()
         )
