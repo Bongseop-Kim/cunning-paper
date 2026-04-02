@@ -10,6 +10,10 @@ enum ZonePickerPresentation {
         .init(id: "center", label: "Centered", x: 0.2, y: 0.2, w: 0.6, h: 0.6, builtIn: true),
     ]
 
+    static func displayPresets(customPresets: [ZonePreset]) -> [ZonePreset] {
+        Array(customPresets.reversed()) + quickPresets
+    }
+
     static func customPresets(for monitor: MonitorInfo, allPresets: [ZonePreset]) -> [ZonePreset] {
         allPresets.filter { preset in
             guard !preset.builtIn else { return false }

@@ -32,4 +32,16 @@ final class ZonePickerPresentationTests: XCTestCase {
 
         XCTAssertEqual(filtered.map(\.id), ["all", "studio"])
     }
+
+    func testDisplayPresetsShowNewestSavedFirstBeforeBuiltIns() {
+        let custom = [
+            ZonePreset(id: "older", label: "Older", x: 0, y: 0, w: 0.5, h: 1, builtIn: false, monitorId: nil, monitorName: nil),
+            ZonePreset(id: "newer", label: "Newer", x: 0.5, y: 0, w: 0.5, h: 1, builtIn: false, monitorId: nil, monitorName: nil)
+        ]
+
+        let displayed = ZonePickerPresentation.displayPresets(customPresets: custom)
+
+        XCTAssertEqual(displayed.prefix(2).map(\.id), ["newer", "older"])
+        XCTAssertEqual(displayed.dropFirst(2).first?.id, "full")
+    }
 }

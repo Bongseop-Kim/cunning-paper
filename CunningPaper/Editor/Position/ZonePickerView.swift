@@ -74,22 +74,20 @@ struct ZonePickerView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
 
                     QuickPositionBar(
-                        presets: ZonePickerPresentation.quickPresets,
+                        presets: ZonePickerPresentation.displayPresets(customPresets: activeCustomPresets),
                         activePresetKey: state.activePresetKey,
                         onSelect: { preset in
                             handleQuickPresetSelect(preset, monitorIndex: state.activeMonitorIndex)
+                        },
+                        onDelete: { preset in
+                            handlePresetDelete(preset.id)
                         }
                     )
 
                     SavedPositionsView(
-                        presets: activeCustomPresets,
                         draftLabel: $state.newPresetLabel,
                         canSave: state.activeSelection != nil,
-                        onSave: { saveCurrentSelection() },
-                        onSelect: { preset in
-                            handlePresetSelect(monitorIndex: state.activeMonitorIndex, preset: preset)
-                        },
-                        onDelete: handlePresetDelete
+                        onSave: { saveCurrentSelection() }
                     )
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -166,12 +164,12 @@ struct ZonePickerView: View {
         handlePresetSelect(monitorIndex: monitorIndex, preset: preset)
     }
 
-    private func handlePresetAdd(monitorIndex: Int, label: String) {
+    private func handlePresetAdd(monitorIndex: Int, label: String) -> ZonePreset? {
         guard
             let monitor = state.monitors[safe: monitorIndex],
             let prefs,
             let rect = state.selectionByMonitor[monitorIndex]
-        else { return }
+        else { return nil }
 
         let canvas = ZonePickerMath.placementCanvasSize(monitor: monitor)
         let dims = GridMath.calcGridDimensions(monitorW: monitor.width, monitorH: monitor.height)
@@ -183,27 +181,29 @@ struct ZonePickerView: View {
             canvasH: canvas.height
         )
         var presets = prefs.customPresets
-        presets.append(
-            ZonePreset(
-                id: UUID().uuidString,
-                label: label,
-                x: ratio.x,
-                y: ratio.y,
-                w: ratio.w,
-                h: ratio.h,
-                builtIn: false,
-                monitorId: monitor.id,
-                monitorName: monitor.name
-            )
+        let preset = ZonePreset(
+            id: UUID().uuidString,
+            label: label,
+            x: ratio.x,
+            y: ratio.y,
+            w: ratio.w,
+            h: ratio.h,
+            builtIn: false,
+            monitorId: monitor.id,
+            monitorName: monitor.name
         )
+        presets.append(preset)
         prefs.customPresets = presets
         try? context.save()
+        return preset
     }
 
     private func saveCurrentSelection() {
         let trimmed = state.newPresetLabel.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        handlePresetAdd(monitorIndex: state.activeMonitorIndex, label: trimmed)
+        if let preset = handlePresetAdd(monitorIndex: state.activeMonitorIndex, label: trimmed) {
+            state.activePresetKey = "\(state.activeMonitorIndex):\(preset.id)"
+        }
         state.newPresetLabel = ""
     }
 
