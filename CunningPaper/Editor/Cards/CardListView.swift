@@ -137,7 +137,6 @@ struct CardListView: View {
 
     private func presentSaveError(_ error: Error, fallbackMessage: String) {
         let description = error.localizedDescription
-        NSLog("Failed to save card list changes: %@", description)
         errorMessage = description.isEmpty ? fallbackMessage : description
     }
 

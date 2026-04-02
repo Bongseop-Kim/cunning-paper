@@ -3,10 +3,11 @@ import SwiftUI
 
 struct CardBodyTextView: NSViewRepresentable {
     @Binding var text: String
+    let documentID: UUID
     var onActiveParagraphChange: (Int?) -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text, onActiveParagraphChange: onActiveParagraphChange)
+        Coordinator(text: $text, documentID: documentID, onActiveParagraphChange: onActiveParagraphChange)
     }
 
     func makeNSView(context: Context) -> NSScrollView {
@@ -36,6 +37,11 @@ struct CardBodyTextView: NSViewRepresentable {
 
         context.coordinator.onActiveParagraphChange = onActiveParagraphChange
 
+        if context.coordinator.lastSeenDocumentID != documentID {
+            context.coordinator.resetForDocumentChange(to: documentID, text: text, in: textView)
+            return
+        }
+
         // Do not touch the backing string or selection while an IME composition is active.
         guard !textView.hasMarkedText() else { return }
 
@@ -56,11 +62,13 @@ struct CardBodyTextView: NSViewRepresentable {
 
     final class Coordinator: NSObject, NSTextViewDelegate {
         @Binding var text: String
+        private(set) var lastSeenDocumentID: UUID
         var onActiveParagraphChange: (Int?) -> Void
         private var lastReportedParagraphIndex: Int?
 
-        init(text: Binding<String>, onActiveParagraphChange: @escaping (Int?) -> Void) {
+        init(text: Binding<String>, documentID: UUID, onActiveParagraphChange: @escaping (Int?) -> Void) {
             _text = text
+            lastSeenDocumentID = documentID
             self.onActiveParagraphChange = onActiveParagraphChange
         }
 
@@ -90,6 +98,18 @@ struct CardBodyTextView: NSViewRepresentable {
             DispatchQueue.main.async { [weak self] in
                 self?.onActiveParagraphChange(index)
             }
+        }
+
+        func resetForDocumentChange(to documentID: UUID, text: String, in textView: NSTextView) {
+            lastSeenDocumentID = documentID
+            textView.string = text
+            textView.setSelectedRange(NSRange(location: 0, length: 0))
+            let index = ParagraphFocus.activeParagraphIndex(
+                in: textView.string,
+                selectedRange: textView.selectedRange()
+            )
+            lastReportedParagraphIndex = index
+            onActiveParagraphChange(index)
         }
     }
 

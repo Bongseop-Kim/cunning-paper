@@ -1,9 +1,16 @@
+import OSLog
 import SwiftData
 import SwiftUI
 
 struct CardDetailView: View {
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "CunningPaper",
+        category: "CardDetailView"
+    )
+
     @Environment(\.modelContext) private var context
     @Environment(\.undoManager) private var undoManager
+    @State private var saveErrorMessage: String?
 
     let card: CardModel
     let onActiveParagraphChange: (Int?) -> Void
@@ -20,6 +27,7 @@ struct CardDetailView: View {
 
             CardBodyTextView(
                 text: textBinding(for: \.body),
+                documentID: card.id,
                 onActiveParagraphChange: onActiveParagraphChange
             )
             .id(card.id)
@@ -31,6 +39,13 @@ struct CardDetailView: View {
         }
         .onDisappear {
             context.undoManager = nil
+        }
+        .alert("Couldn't Save Changes", isPresented: saveErrorPresented) {
+            Button("OK") {
+                saveErrorMessage = nil
+            }
+        } message: {
+            Text(saveErrorMessage ?? "The card change could not be saved.")
         }
     }
 
@@ -55,8 +70,25 @@ struct CardDetailView: View {
             try context.save()
         } catch {
             restore()
+            presentSaveError(error, fallbackMessage: "The card change could not be saved.")
             assertionFailure("Failed to save card changes: \(error)")
         }
     }
 
+    private var saveErrorPresented: Binding<Bool> {
+        Binding(
+            get: { saveErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    saveErrorMessage = nil
+                }
+            }
+        )
+    }
+
+    private func presentSaveError(_ error: Error, fallbackMessage: String) {
+        let description = error.localizedDescription
+        Self.logger.error("Failed to save card changes: \(String(describing: error), privacy: .public)")
+        saveErrorMessage = description.isEmpty ? fallbackMessage : description
+    }
 }

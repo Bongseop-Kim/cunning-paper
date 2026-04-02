@@ -1,3 +1,5 @@
+import AppKit
+import SwiftUI
 import XCTest
 @testable import CunningPaper
 
@@ -117,6 +119,26 @@ final class ModelTests: XCTestCase {
         )
 
         XCTAssertEqual(selection, NSRange(location: 5, length: 0))
+    }
+
+    func testCardBodyTextViewResetsSelectionWhenDocumentChanges() {
+        let firstDocumentID = UUID()
+        let secondDocumentID = UUID()
+        var reportedParagraph: Int?
+        let coordinator = CardBodyTextView.Coordinator(
+            text: .constant("Shared text"),
+            documentID: firstDocumentID,
+            onActiveParagraphChange: { reportedParagraph = $0 }
+        )
+        let textView = NSTextView()
+        textView.string = "Shared text"
+        textView.setSelectedRange(NSRange(location: 6, length: 0))
+
+        coordinator.resetForDocumentChange(to: secondDocumentID, text: "Shared text", in: textView)
+
+        XCTAssertEqual(textView.selectedRange(), NSRange(location: 0, length: 0))
+        XCTAssertEqual(coordinator.lastSeenDocumentID, secondDocumentID)
+        XCTAssertEqual(reportedParagraph, 0)
     }
 
     func testPrefsModelCustomPresetsRoundtrip() {
