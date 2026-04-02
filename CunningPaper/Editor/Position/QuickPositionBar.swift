@@ -35,8 +35,9 @@ struct QuickPositionBar: View {
                             onSelect(preset)
                         } label: {
                             GeometryReader { proxy in
+                                let availableWidth = max(0, proxy.size.width - 24)
                                 let layout = ZonePickerPresentation.quickPresetPreviewLayout(
-                                    availableWidth: proxy.size.width,
+                                    availableWidth: availableWidth,
                                     availableHeight: cardContentHeight
                                 )
 

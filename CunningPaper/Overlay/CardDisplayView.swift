@@ -17,13 +17,7 @@ struct CardDisplayView: View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: stackSpacing) {
                 ForEach(Array(paragraphs.enumerated()), id: \.offset) { index, paragraph in
-                    Text(paragraph)
-                        .font(.system(size: fontSize))
-                        .lineSpacing(paragraphLineSpacing)
-                        .lineLimit(paragraphLineLimit)
-                        .truncationMode(.tail)
-                        .foregroundStyle(foregroundColor(for: index))
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    paragraphView(paragraph, at: index)
                 }
             }
         }
@@ -40,6 +34,22 @@ struct CardDisplayView: View {
         }
         guard highlightCurrentParagraph else { return .white }
         return index == activeIndex ? .white : .white.opacity(0.38)
+    }
+
+    @ViewBuilder
+    private func paragraphView(_ paragraph: String, at index: Int) -> some View {
+        let text = Text(paragraph)
+            .font(.system(size: fontSize))
+            .lineSpacing(paragraphLineSpacing)
+            .lineLimit(paragraphLineLimit)
+            .foregroundStyle(foregroundColor(for: index))
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+        if paragraphLineLimit != nil {
+            text.truncationMode(.tail)
+        } else {
+            text
+        }
     }
 
     private var bottomFadeMask: some View {

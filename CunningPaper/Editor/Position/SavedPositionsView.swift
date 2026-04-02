@@ -20,7 +20,7 @@ struct SavedPositionsView: View {
                 Button("Save Current") {
                     onSave()
                 }
-                .disabled(!canSave)
+                .disabled(!canSave || draftLabel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
 
             Text("Saved layouts appear in Quick Positions so they are easier to reuse and remove.")

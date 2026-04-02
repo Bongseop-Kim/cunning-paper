@@ -241,7 +241,7 @@ Test Suite 'ZonePickerPresentationTests' passed
 - [ ] **Step 5: Commit**
 
 ```bash
-git add CunningPaper/Editor/Position/ZonePickerPresentation.swift CunningPaper/Editor/Position/PresetPreviewView.swift CunningPaperTests/ZonePickerPresentationTests.swift
+git add CunningPaper/Editor/Position/ZonePickerPresentation.swift CunningPaper/Editor/Position/PresetPreviewView.swift CunningPaper.xcodeproj/project.pbxproj CunningPaperTests/ZonePickerPresentationTests.swift
 git commit -m "feat: add quick position preset preview view"
 ```
 

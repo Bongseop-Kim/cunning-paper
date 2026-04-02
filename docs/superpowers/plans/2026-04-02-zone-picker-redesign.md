@@ -177,7 +177,7 @@ Test Suite 'ZonePickerPresentationTests' passed
 - [ ] **Step 5: Commit**
 
 ```bash
-git add CunningPaper/Editor/Position/ZonePickerPresentation.swift CunningPaperTests/ZonePickerPresentationTests.swift
+git add CunningPaper/Editor/Position/ZonePickerPresentation.swift CunningPaper.xcodeproj/project.pbxproj CunningPaperTests/ZonePickerPresentationTests.swift
 git commit -m "feat: add zone picker presentation helpers"
 ```
 
@@ -347,7 +347,7 @@ Expected:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add CunningPaper/Editor/Position/PositionHeaderView.swift CunningPaper/Editor/Position/QuickPositionBar.swift CunningPaper/Editor/Position/SavedPositionsView.swift
+git add CunningPaper/Editor/Position/PositionHeaderView.swift CunningPaper/Editor/Position/QuickPositionBar.swift CunningPaper/Editor/Position/SavedPositionsView.swift CunningPaper.xcodeproj/project.pbxproj
 git commit -m "feat: add zone picker workflow views"
 ```
 
@@ -545,7 +545,7 @@ Expected:
 - [ ] **Step 4: Commit**
 
 ```bash
-git add CunningPaper/Editor/Position/GridCanvasView.swift
+git add CunningPaper/Editor/Position/GridCanvasView.swift CunningPaper.xcodeproj/project.pbxproj
 git rm CunningPaper/Editor/Position/PresetListView.swift
 git commit -m "feat: finalize zone picker redesign"
 ```

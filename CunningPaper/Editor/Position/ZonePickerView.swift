@@ -1,3 +1,4 @@
+import OSLog
 import Observation
 import SwiftData
 import SwiftUI
@@ -21,6 +22,11 @@ final class ZonePickerState {
 }
 
 struct ZonePickerView: View {
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "CunningPaper",
+        category: "ZonePickerView"
+    )
+
     @Environment(\.modelContext) private var context
     @Query private var prefsArray: [PrefsModel]
     @State private var state = ZonePickerState()
@@ -106,7 +112,7 @@ struct ZonePickerView: View {
     private func ensurePrefsExists() {
         guard prefsArray.isEmpty else { return }
         context.insert(PrefsModel())
-        try? context.save()
+        saveContext("creating default preferences")
     }
 
     private func loadMonitors() {
@@ -194,7 +200,7 @@ struct ZonePickerView: View {
         )
         presets.append(preset)
         prefs.customPresets = presets
-        try? context.save()
+        saveContext("saving a custom zone preset")
         return preset
     }
 
@@ -202,9 +208,9 @@ struct ZonePickerView: View {
         let trimmed = state.newPresetLabel.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         if let preset = handlePresetAdd(monitorIndex: state.activeMonitorIndex, label: trimmed) {
+            state.newPresetLabel = ""
             state.activePresetKey = "\(state.activeMonitorIndex):\(preset.id)"
         }
-        state.newPresetLabel = ""
     }
 
     private func handlePresetDelete(_ presetID: String) {
@@ -212,7 +218,7 @@ struct ZonePickerView: View {
         var presets = prefs.customPresets
         presets.removeAll(where: { $0.id == presetID })
         prefs.customPresets = presets
-        try? context.save()
+        saveContext("deleting a custom zone preset")
     }
 
     private func selectionFromPrefs(for monitor: MonitorInfo) -> DisplayRect? {
@@ -250,7 +256,15 @@ struct ZonePickerView: View {
             prefs.overlayY = bounds.y
             prefs.overlayWidth = bounds.width
             prefs.overlayHeight = bounds.height
-            try? context.save()
+            saveContext("saving overlay bounds")
+        }
+    }
+
+    private func saveContext(_ operation: StaticString) {
+        do {
+            try context.save()
+        } catch {
+            Self.logger.error("Failed while \(operation): \(error.localizedDescription, privacy: .public)")
         }
     }
 }

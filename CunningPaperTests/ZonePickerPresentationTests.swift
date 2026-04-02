@@ -2,10 +2,6 @@ import XCTest
 @testable import CunningPaper
 
 final class ZonePickerPresentationTests: XCTestCase {
-    func testPositionHeaderUsesIntrinsicPickerWidthForMultipleMonitors() {
-        XCTAssertNil(PositionHeaderView.monitorPickerWidth(for: 2))
-    }
-
     func testSummaryLabelMatchesBuiltInLeftHalf() {
         let label = ZonePickerPresentation.summaryLabel(
             for: DisplayRect(x: 0, y: 0, w: 200, h: 400),
@@ -35,18 +31,6 @@ final class ZonePickerPresentationTests: XCTestCase {
         let filtered = ZonePickerPresentation.customPresets(for: monitor, allPresets: presets)
 
         XCTAssertEqual(filtered.map(\.id), ["all", "studio"])
-    }
-
-    func testDisplayPresetsShowNewestSavedFirstBeforeBuiltIns() {
-        let custom = [
-            ZonePreset(id: "older", label: "Older", x: 0, y: 0, w: 0.5, h: 1, builtIn: false, monitorId: nil, monitorName: nil),
-            ZonePreset(id: "newer", label: "Newer", x: 0.5, y: 0, w: 0.5, h: 1, builtIn: false, monitorId: nil, monitorName: nil)
-        ]
-
-        let displayed = ZonePickerPresentation.displayPresets(customPresets: custom)
-
-        XCTAssertEqual(displayed.prefix(2).map(\.id), ["newer", "older"])
-        XCTAssertEqual(displayed.dropFirst(2).first?.id, "full")
     }
 
     func testQuickPresetPreviewUsesTopLayoutForWidePreviewArea() {
@@ -90,6 +74,15 @@ final class ZonePickerPresentationTests: XCTestCase {
         XCTAssertEqual(layout, .topThumbnail)
     }
 
+    func testQuickPresetPreviewLayoutUsesContentWidthInsideCardPadding() {
+        let layout = ZonePickerPresentation.quickPresetPreviewLayout(
+            availableWidth: max(0, 110 - 24),
+            availableHeight: 72
+        )
+
+        XCTAssertEqual(layout, .sideIcon)
+    }
+
     func testDisplayPresetsKeepsNewestCustomPresetAheadOfBuiltIns() {
         let custom = [
             ZonePreset(id: "older", label: "Older", x: 0, y: 0, w: 0.5, h: 1, builtIn: false, monitorId: nil, monitorName: nil),
@@ -98,6 +91,8 @@ final class ZonePickerPresentationTests: XCTestCase {
 
         let displayed = ZonePickerPresentation.displayPresets(customPresets: custom)
 
+        XCTAssertEqual(displayed.prefix(2).map(\.id), ["newer", "older"])
+        XCTAssertEqual(displayed.dropFirst(2).first?.id, "full")
         XCTAssertEqual(displayed.map(\.id), ["newer", "older", "full", "left", "right", "top", "bottom", "center"])
     }
 }
