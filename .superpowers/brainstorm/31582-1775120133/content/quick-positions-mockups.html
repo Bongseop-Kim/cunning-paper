@@ -1,0 +1,117 @@
+<h2>Quick Positions Mockups</h2>
+<p class="subtitle">빌트인 6개 + 커스텀 저장 프리셋이 섞여 있을 때 어떤 카드 구성이 가장 빠르게 읽히는지 비교한 시안입니다.</p>
+
+<div class="cards">
+  <div class="card" data-choice="text-only" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Text Only</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;">
+              <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Saved</div>
+              <div style="font-size:14px;font-weight:600;margin-top:6px;">Essay Focus</div>
+            </div>
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;">
+              <div style="font-size:14px;font-weight:600;">Full Screen</div>
+            </div>
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;">
+              <div style="font-size:14px;font-weight:600;">Left Half</div>
+            </div>
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#eef4ff;box-shadow:inset 0 0 0 1px #7aa2ff;">
+              <div style="font-size:14px;font-weight:600;">Centered</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>텍스트만 유지</h3>
+      <p>가장 단순하지만 커스텀과 빌트인 모양을 읽어서 상상해야 합니다.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="thumb-top" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Thumbnail + Label</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;">
+              <div style="width:100%;height:34px;border-radius:7px;border:1px solid #c9d0da;background:#eef2f6;position:relative;margin-bottom:8px;">
+                <div style="position:absolute;left:8%;top:18%;width:52%;height:64%;border-radius:5px;background:#8fb5ff;"></div>
+              </div>
+              <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Saved</div>
+              <div style="font-size:14px;font-weight:600;margin-top:4px;">Essay Focus</div>
+            </div>
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;">
+              <div style="width:100%;height:34px;border-radius:7px;border:1px solid #c9d0da;background:#eef2f6;position:relative;margin-bottom:8px;">
+                <div style="position:absolute;left:4%;top:10%;width:92%;height:80%;border-radius:5px;background:#9db8ff;"></div>
+              </div>
+              <div style="font-size:14px;font-weight:600;">Full Screen</div>
+            </div>
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;">
+              <div style="width:100%;height:34px;border-radius:7px;border:1px solid #c9d0da;background:#eef2f6;position:relative;margin-bottom:8px;">
+                <div style="position:absolute;left:4%;top:10%;width:44%;height:80%;border-radius:5px;background:#9db8ff;"></div>
+              </div>
+              <div style="font-size:14px;font-weight:600;">Left Half</div>
+            </div>
+            <div style="border:1px solid #7aa2ff;border-radius:12px;padding:10px;background:#eef4ff;">
+              <div style="width:100%;height:34px;border-radius:7px;border:1px solid #c9d0da;background:#eef2f6;position:relative;margin-bottom:8px;">
+                <div style="position:absolute;left:20%;top:20%;width:60%;height:60%;border-radius:5px;background:#5b8cff;"></div>
+              </div>
+              <div style="font-size:14px;font-weight:600;">Centered</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>상단 썸네일 + 이름</h3>
+      <p>모양을 먼저 보고 이름으로 확인하는 구조라 지금 데이터 구성에 가장 안정적입니다.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="thumb-left" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">C. Side Icon + Label</div>
+        <div class="mockup-body">
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;display:flex;gap:10px;align-items:center;">
+              <div style="width:34px;height:26px;border-radius:6px;border:1px solid #c9d0da;background:#eef2f6;position:relative;flex:0 0 auto;">
+                <div style="position:absolute;left:8%;top:18%;width:52%;height:64%;border-radius:4px;background:#8fb5ff;"></div>
+              </div>
+              <div style="min-width:0;">
+                <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Saved</div>
+                <div style="font-size:14px;font-weight:600;margin-top:4px;">Essay Focus</div>
+              </div>
+            </div>
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;display:flex;gap:10px;align-items:center;">
+              <div style="width:34px;height:26px;border-radius:6px;border:1px solid #c9d0da;background:#eef2f6;position:relative;flex:0 0 auto;">
+                <div style="position:absolute;left:4%;top:10%;width:92%;height:80%;border-radius:4px;background:#9db8ff;"></div>
+              </div>
+              <div style="font-size:14px;font-weight:600;">Full Screen</div>
+            </div>
+            <div style="border:1px solid #d9dde6;border-radius:12px;padding:10px;background:#f7f8fb;display:flex;gap:10px;align-items:center;">
+              <div style="width:34px;height:26px;border-radius:6px;border:1px solid #c9d0da;background:#eef2f6;position:relative;flex:0 0 auto;">
+                <div style="position:absolute;left:4%;top:10%;width:44%;height:80%;border-radius:4px;background:#9db8ff;"></div>
+              </div>
+              <div style="font-size:14px;font-weight:600;">Left Half</div>
+            </div>
+            <div style="border:1px solid #7aa2ff;border-radius:12px;padding:10px;background:#eef4ff;display:flex;gap:10px;align-items:center;">
+              <div style="width:34px;height:26px;border-radius:6px;border:1px solid #c9d0da;background:#eef2f6;position:relative;flex:0 0 auto;">
+                <div style="position:absolute;left:20%;top:20%;width:60%;height:60%;border-radius:4px;background:#5b8cff;"></div>
+              </div>
+              <div style="font-size:14px;font-weight:600;">Centered</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>좌측 아이콘 + 이름</h3>
+      <p>공간 효율은 좋지만 썸네일이 너무 작아져 커스텀 모양 구분력이 약해집니다.</p>
+    </div>
+  </div>
+</div>

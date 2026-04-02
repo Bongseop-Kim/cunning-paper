@@ -1,3 +1,4 @@
+import OSLog
 import Observation
 import SwiftData
 import SwiftUI
@@ -8,7 +9,7 @@ final class ZonePickerState {
     var activeMonitorIndex = 0
     var selectionByMonitor: [Int: DisplayRect] = [:]
     var activePresetKey: String?
-    var collapsedByMonitor: [Int: Bool] = [:]
+    var newPresetLabel = ""
 
     var activeMonitor: MonitorInfo? {
         monitors[safe: activeMonitorIndex]
@@ -18,19 +19,14 @@ final class ZonePickerState {
         get { selectionByMonitor[activeMonitorIndex] }
         set { selectionByMonitor[activeMonitorIndex] = newValue }
     }
-
-    func presets(for index: Int, customPresets: [ZonePreset]) -> [ZonePreset] {
-        guard let monitor = monitors[safe: index] else { return ZonePreset.builtIns }
-        let custom = customPresets.filter { preset in
-            if let monitorID = preset.monitorId { return monitorID == monitor.id }
-            if let monitorName = preset.monitorName { return monitorName == monitor.name }
-            return true
-        }
-        return ZonePreset.builtIns + custom
-    }
 }
 
 struct ZonePickerView: View {
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "CunningPaper",
+        category: "ZonePickerView"
+    )
+
     @Environment(\.modelContext) private var context
     @Query private var prefsArray: [PrefsModel]
     @State private var state = ZonePickerState()
@@ -39,27 +35,34 @@ struct ZonePickerView: View {
         prefsArray.first
     }
 
-    var body: some View {
-        HSplitView {
-            PresetListView(
-                monitors: state.monitors,
-                presetsByMonitor: state.monitors.indices.map { state.presets(for: $0, customPresets: prefs?.customPresets ?? []) },
-                activeMonitorIdx: state.activeMonitorIndex,
-                activePresetKey: state.activePresetKey,
-                collapsedByMonitor: state.collapsedByMonitor,
-                onMonitorSelect: { state.activeMonitorIndex = $0 },
-                onPresetSelect: handlePresetSelect,
-                onPresetAdd: handlePresetAdd,
-                onPresetDelete: handlePresetDelete,
-                onToggleCollapse: { index in
-                    state.collapsedByMonitor[index] = !(state.collapsedByMonitor[index] ?? false)
-                }
-            )
-            .frame(minWidth: 220, maxWidth: 240)
+    private var activeCustomPresets: [ZonePreset] {
+        guard let monitor = state.activeMonitor else { return [] }
+        return ZonePickerPresentation.customPresets(for: monitor, allPresets: prefs?.customPresets ?? [])
+    }
 
-            ZStack {
-                if let monitor = state.activeMonitor {
-                    let canvas = ZonePickerMath.placementCanvasSize(monitor: monitor)
+    private var currentSummary: String {
+        guard let monitor = state.activeMonitor else { return "No position selected" }
+        let canvas = ZonePickerMath.placementCanvasSize(monitor: monitor)
+        return ZonePickerPresentation.summaryLabel(
+            for: state.activeSelection,
+            canvas: CGSize(width: canvas.width, height: canvas.height)
+        )
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            PositionHeaderView(
+                monitors: state.monitors,
+                selectedMonitorIndex: state.activeMonitorIndex,
+                onMonitorSelect: handleMonitorSelect,
+                monitor: state.activeMonitor,
+                summary: currentSummary
+            )
+
+            if let monitor = state.activeMonitor {
+                let canvas = ZonePickerMath.placementCanvasSize(monitor: monitor)
+
+                VStack(alignment: .leading, spacing: 16) {
                     GridCanvasView(
                         monitor: monitor,
                         canvas: canvas,
@@ -70,16 +73,36 @@ struct ZonePickerView: View {
                         },
                         onSelectionCommit: { rect in
                             state.activeSelection = rect
+                            state.activePresetKey = nil
                             applyAndSave(rect: rect, monitor: monitor, canvas: canvas)
                         }
                     )
-                    .padding(24)
-                } else {
-                    ContentUnavailableView("No display found", systemImage: "display")
+                    .frame(maxWidth: .infinity, alignment: .center)
+
+                    QuickPositionBar(
+                        presets: ZonePickerPresentation.displayPresets(customPresets: activeCustomPresets),
+                        activePresetKey: state.activePresetKey,
+                        onSelect: { preset in
+                            handleQuickPresetSelect(preset, monitorIndex: state.activeMonitorIndex)
+                        },
+                        onDelete: { preset in
+                            handlePresetDelete(preset.id)
+                        }
+                    )
+
+                    SavedPositionsView(
+                        draftLabel: $state.newPresetLabel,
+                        canSave: state.activeSelection != nil,
+                        onSave: { saveCurrentSelection() }
+                    )
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            } else {
+                ContentUnavailableView("No display found", systemImage: "display")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .padding(20)
         .task {
             ensurePrefsExists()
             loadMonitors()
@@ -89,7 +112,7 @@ struct ZonePickerView: View {
     private func ensurePrefsExists() {
         guard prefsArray.isEmpty else { return }
         context.insert(PrefsModel())
-        try? context.save()
+        saveContext("creating default preferences")
     }
 
     private func loadMonitors() {
@@ -110,19 +133,17 @@ struct ZonePickerView: View {
         }
 
         if let monitor = state.activeMonitor {
-            let canvas = ZonePickerMath.placementCanvasSize(monitor: monitor)
-            let bounds = PhysicalBounds(
-                x: prefs.overlayX,
-                y: prefs.overlayY,
-                width: prefs.overlayWidth,
-                height: prefs.overlayHeight
-            )
-            state.activeSelection = ZonePickerMath.physicalBoundsToDisplayRect(
-                bounds: bounds,
-                monitor: monitor,
-                canvasWidth: canvas.width
-            )
+            state.activeSelection = selectionFromPrefs(for: monitor)
         }
+    }
+
+    private func handleMonitorSelect(_ index: Int) {
+        guard state.monitors.indices.contains(index) else { return }
+        state.activeMonitorIndex = index
+        state.activePresetKey = nil
+
+        guard state.selectionByMonitor[index] == nil, let monitor = state.activeMonitor else { return }
+        state.selectionByMonitor[index] = selectionFromPrefs(for: monitor)
     }
 
     private func handlePresetSelect(monitorIndex: Int, preset: ZonePreset) {
@@ -145,12 +166,16 @@ struct ZonePickerView: View {
         applyAndSave(rect: rect, monitor: monitor, canvas: canvas)
     }
 
-    private func handlePresetAdd(monitorIndex: Int, label: String) {
+    private func handleQuickPresetSelect(_ preset: ZonePreset, monitorIndex: Int) {
+        handlePresetSelect(monitorIndex: monitorIndex, preset: preset)
+    }
+
+    private func handlePresetAdd(monitorIndex: Int, label: String) -> ZonePreset? {
         guard
             let monitor = state.monitors[safe: monitorIndex],
             let prefs,
             let rect = state.selectionByMonitor[monitorIndex]
-        else { return }
+        else { return nil }
 
         let canvas = ZonePickerMath.placementCanvasSize(monitor: monitor)
         let dims = GridMath.calcGridDimensions(monitorW: monitor.width, monitorH: monitor.height)
@@ -162,21 +187,30 @@ struct ZonePickerView: View {
             canvasH: canvas.height
         )
         var presets = prefs.customPresets
-        presets.append(
-            ZonePreset(
-                id: UUID().uuidString,
-                label: label,
-                x: ratio.x,
-                y: ratio.y,
-                w: ratio.w,
-                h: ratio.h,
-                builtIn: false,
-                monitorId: monitor.id,
-                monitorName: monitor.name
-            )
+        let preset = ZonePreset(
+            id: UUID().uuidString,
+            label: label,
+            x: ratio.x,
+            y: ratio.y,
+            w: ratio.w,
+            h: ratio.h,
+            builtIn: false,
+            monitorId: monitor.id,
+            monitorName: monitor.name
         )
+        presets.append(preset)
         prefs.customPresets = presets
-        try? context.save()
+        saveContext("saving a custom zone preset")
+        return preset
+    }
+
+    private func saveCurrentSelection() {
+        let trimmed = state.newPresetLabel.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        if let preset = handlePresetAdd(monitorIndex: state.activeMonitorIndex, label: trimmed) {
+            state.newPresetLabel = ""
+            state.activePresetKey = "\(state.activeMonitorIndex):\(preset.id)"
+        }
     }
 
     private func handlePresetDelete(_ presetID: String) {
@@ -184,7 +218,24 @@ struct ZonePickerView: View {
         var presets = prefs.customPresets
         presets.removeAll(where: { $0.id == presetID })
         prefs.customPresets = presets
-        try? context.save()
+        saveContext("deleting a custom zone preset")
+    }
+
+    private func selectionFromPrefs(for monitor: MonitorInfo) -> DisplayRect? {
+        guard let prefs else { return nil }
+        let canvas = ZonePickerMath.placementCanvasSize(monitor: monitor)
+        let bounds = PhysicalBounds(
+            x: prefs.overlayX,
+            y: prefs.overlayY,
+            width: prefs.overlayWidth,
+            height: prefs.overlayHeight
+        )
+        let rect = ZonePickerMath.physicalBoundsToDisplayRect(
+            bounds: bounds,
+            monitor: monitor,
+            canvasWidth: canvas.width
+        )
+        return ZonePickerMath.clamp(rect: rect, canvasWidth: canvas.width, canvasHeight: canvas.height)
     }
 
     private func applyAndSave(
@@ -205,7 +256,15 @@ struct ZonePickerView: View {
             prefs.overlayY = bounds.y
             prefs.overlayWidth = bounds.width
             prefs.overlayHeight = bounds.height
-            try? context.save()
+            saveContext("saving overlay bounds")
+        }
+    }
+
+    private func saveContext(_ operation: StaticString) {
+        do {
+            try context.save()
+        } catch {
+            Self.logger.error("Failed while \(operation): \(error.localizedDescription, privacy: .public)")
         }
     }
 }

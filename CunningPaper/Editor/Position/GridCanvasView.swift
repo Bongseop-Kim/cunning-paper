@@ -77,14 +77,29 @@ struct GridCanvasView: View {
                     )
                     context.fill(
                         Path(roundedRect: rect, cornerRadius: 2),
-                        with: .color(isSelected ? .primary : Color(nsColor: .quaternaryLabelColor))
+                        with: .color(isSelected ? Color.accentColor.opacity(0.9) : Color(nsColor: .quaternaryLabelColor))
                     )
+
+                    if isSelected {
+                        context.stroke(
+                            Path(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5), cornerRadius: 2),
+                            with: .color(.white.opacity(0.9)),
+                            lineWidth: 1
+                        )
+                    }
                 }
             }
         }
         .frame(width: canvas.width, height: canvas.height)
-        .background(Color(nsColor: .windowBackgroundColor))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in

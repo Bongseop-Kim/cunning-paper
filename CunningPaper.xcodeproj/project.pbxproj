@@ -24,9 +24,12 @@
 		AA0000210000000000000001 /* CardStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000210000000000000001 /* CardStudioView.swift */; };
 		AA0000220000000000000001 /* ParagraphFocus.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000220000000000000001 /* ParagraphFocus.swift */; };
 		AA0000230000000000000001 /* CardBodyTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000230000000000000001 /* CardBodyTextView.swift */; };
+		AA0000260000000000000001 /* PositionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000260000000000000001 /* PositionHeaderView.swift */; };
+		AA0000270000000000000001 /* QuickPositionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000270000000000000001 /* QuickPositionBar.swift */; };
+		AA0000280000000000000001 /* SavedPositionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000280000000000000001 /* SavedPositionsView.swift */; };
+		AA0000290000000000000001 /* PresetPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000290000000000000001 /* PresetPreviewView.swift */; };
 		AA00000F0000000000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000F0000000000000001 /* PreferencesView.swift */; };
 		AA0000100000000000000001 /* ZonePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000100000000000000001 /* ZonePickerView.swift */; };
-		AA0000110000000000000001 /* PresetListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000110000000000000001 /* PresetListView.swift */; };
 		AA0000120000000000000001 /* GridCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000120000000000000001 /* GridCanvasView.swift */; };
 		AA0000130000000000000001 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000130000000000000001 /* HotkeyManager.swift */; };
 		AA0000140000000000000001 /* TrayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000140000000000000001 /* TrayController.swift */; };
@@ -34,10 +37,12 @@
 		AA0000160000000000000001 /* ZonePickerMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000160000000000000001 /* ZonePickerMath.swift */; };
 		AA0000170000000000000001 /* GridMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000170000000000000001 /* GridMath.swift */; };
 		AA0000180000000000000001 /* KeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000180000000000000001 /* KeyboardShortcuts.swift */; };
+		AA0000250000000000000001 /* ZonePickerPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000250000000000000001 /* ZonePickerPresentation.swift */; };
 		AA0000190000000000000001 /* CunningPaperTests/ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000190000000000000001 /* CunningPaperTests/ModelTests.swift */; };
 		AA00001A0000000000000001 /* CunningPaperTests/MigrationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10001A0000000000000001 /* CunningPaperTests/MigrationServiceTests.swift */; };
 		AA00001B0000000000000001 /* CunningPaperTests/GridMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10001B0000000000000001 /* CunningPaperTests/GridMathTests.swift */; };
 		AA00001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift */; };
+		AA0000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,9 +73,12 @@
 		AA1000210000000000000001 /* CardStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardStudioView.swift; path = CunningPaper/Editor/Cards/CardStudioView.swift; sourceTree = SOURCE_ROOT; };
 		AA1000220000000000000001 /* ParagraphFocus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ParagraphFocus.swift; path = CunningPaper/Utilities/ParagraphFocus.swift; sourceTree = SOURCE_ROOT; };
 		AA1000230000000000000001 /* CardBodyTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CardBodyTextView.swift; path = CunningPaper/Editor/Cards/CardBodyTextView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000260000000000000001 /* PositionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PositionHeaderView.swift; path = CunningPaper/Editor/Position/PositionHeaderView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000270000000000000001 /* QuickPositionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QuickPositionBar.swift; path = CunningPaper/Editor/Position/QuickPositionBar.swift; sourceTree = SOURCE_ROOT; };
+		AA1000280000000000000001 /* SavedPositionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SavedPositionsView.swift; path = CunningPaper/Editor/Position/SavedPositionsView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000290000000000000001 /* PresetPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PresetPreviewView.swift; path = CunningPaper/Editor/Position/PresetPreviewView.swift; sourceTree = SOURCE_ROOT; };
 		AA10000F0000000000000001 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PreferencesView.swift; path = CunningPaper/Editor/Preferences/PreferencesView.swift; sourceTree = SOURCE_ROOT; };
 		AA1000100000000000000001 /* ZonePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ZonePickerView.swift; path = CunningPaper/Editor/Position/ZonePickerView.swift; sourceTree = SOURCE_ROOT; };
-		AA1000110000000000000001 /* PresetListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PresetListView.swift; path = CunningPaper/Editor/Position/PresetListView.swift; sourceTree = SOURCE_ROOT; };
 		AA1000120000000000000001 /* GridCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GridCanvasView.swift; path = CunningPaper/Editor/Position/GridCanvasView.swift; sourceTree = SOURCE_ROOT; };
 		AA1000130000000000000001 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HotkeyManager.swift; path = CunningPaper/System/HotkeyManager.swift; sourceTree = SOURCE_ROOT; };
 		AA1000140000000000000001 /* TrayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TrayController.swift; path = CunningPaper/System/TrayController.swift; sourceTree = SOURCE_ROOT; };
@@ -78,10 +86,12 @@
 		AA1000160000000000000001 /* ZonePickerMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ZonePickerMath.swift; path = CunningPaper/Utilities/ZonePickerMath.swift; sourceTree = SOURCE_ROOT; };
 		AA1000170000000000000001 /* GridMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GridMath.swift; path = CunningPaper/Utilities/GridMath.swift; sourceTree = SOURCE_ROOT; };
 		AA1000180000000000000001 /* KeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeyboardShortcuts.swift; path = CunningPaper/Support/KeyboardShortcuts.swift; sourceTree = SOURCE_ROOT; };
+		AA1000250000000000000001 /* ZonePickerPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ZonePickerPresentation.swift; path = CunningPaper/Editor/Position/ZonePickerPresentation.swift; sourceTree = SOURCE_ROOT; };
 		AA1000190000000000000001 /* CunningPaperTests/ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/ModelTests.swift; sourceTree = SOURCE_ROOT; };
 		AA10001A0000000000000001 /* CunningPaperTests/MigrationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/MigrationServiceTests.swift; sourceTree = SOURCE_ROOT; };
 		AA10001B0000000000000001 /* CunningPaperTests/GridMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/GridMathTests.swift; sourceTree = SOURCE_ROOT; };
 		AA10001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/ZonePickerMathTests.swift; sourceTree = SOURCE_ROOT; };
+		AA1000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/ZonePickerPresentationTests.swift; sourceTree = SOURCE_ROOT; };
 		AA10001D0000000000000001 /* CunningPaper/CunningPaper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CunningPaper/CunningPaper.entitlements; sourceTree = SOURCE_ROOT; };
 		AA10001E0000000000000001 /* CunningPaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CunningPaper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA10001F0000000000000001 /* CunningPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CunningPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -182,8 +192,12 @@
 			isa = PBXGroup;
 			children = (
 				AA1000100000000000000001 /* ZonePickerView.swift */,
-				AA1000110000000000000001 /* PresetListView.swift */,
 				AA1000120000000000000001 /* GridCanvasView.swift */,
+				AA1000250000000000000001 /* ZonePickerPresentation.swift */,
+				AA1000260000000000000001 /* PositionHeaderView.swift */,
+				AA1000270000000000000001 /* QuickPositionBar.swift */,
+				AA1000290000000000000001 /* PresetPreviewView.swift */,
+				AA1000280000000000000001 /* SavedPositionsView.swift */,
 			);
 			path = Position;
 			sourceTree = "<group>";
@@ -228,6 +242,7 @@
 				AA10001A0000000000000001 /* CunningPaperTests/MigrationServiceTests.swift */,
 				AA10001B0000000000000001 /* CunningPaperTests/GridMathTests.swift */,
 				AA10001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift */,
+				AA1000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift */,
 			);
 			path = CunningPaperTests;
 			sourceTree = "<group>";
@@ -353,11 +368,14 @@
 				AA00000D0000000000000001 /* CardDetailView.swift in Sources */,
 				AA00000E0000000000000001 /* CardEmptyStateView.swift in Sources */,
 				AA0000230000000000000001 /* CardBodyTextView.swift in Sources */,
+				AA0000260000000000000001 /* PositionHeaderView.swift in Sources */,
+				AA0000270000000000000001 /* QuickPositionBar.swift in Sources */,
+				AA0000290000000000000001 /* PresetPreviewView.swift in Sources */,
+				AA0000280000000000000001 /* SavedPositionsView.swift in Sources */,
 				AA0000200000000000000001 /* CardPreviewPane.swift in Sources */,
 				AA0000210000000000000001 /* CardStudioView.swift in Sources */,
 				AA00000F0000000000000001 /* PreferencesView.swift in Sources */,
 				AA0000100000000000000001 /* ZonePickerView.swift in Sources */,
-				AA0000110000000000000001 /* PresetListView.swift in Sources */,
 				AA0000120000000000000001 /* GridCanvasView.swift in Sources */,
 				AA0000130000000000000001 /* HotkeyManager.swift in Sources */,
 				AA0000140000000000000001 /* TrayController.swift in Sources */,
@@ -366,6 +384,7 @@
 				AA0000170000000000000001 /* GridMath.swift in Sources */,
 				AA0000220000000000000001 /* ParagraphFocus.swift in Sources */,
 				AA0000180000000000000001 /* KeyboardShortcuts.swift in Sources */,
+				AA0000250000000000000001 /* ZonePickerPresentation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,6 +396,7 @@
 				AA00001A0000000000000001 /* CunningPaperTests/MigrationServiceTests.swift in Sources */,
 				AA00001B0000000000000001 /* CunningPaperTests/GridMathTests.swift in Sources */,
 				AA00001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift in Sources */,
+				AA0000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

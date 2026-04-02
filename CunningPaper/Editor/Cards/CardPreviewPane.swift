@@ -1,4 +1,27 @@
+import AppKit
 import SwiftUI
+
+enum CardPreviewMetrics {
+    static let visibleParagraphCount = 3
+    static let fontSize: CGFloat = 20
+    static let stackSpacing: CGFloat = 10
+    static let paragraphLineSpacing = fontSize * 0.16
+    static let horizontalPadding: CGFloat = 18
+    static let verticalPadding: CGFloat = 16
+    private static let lineHeightLayoutManager = NSLayoutManager()
+
+    static func cardHeight(forVisibleParagraphs count: Int) -> CGFloat {
+        let visibleCount = max(count, 1)
+        let lineHeight = lineHeightLayoutManager.defaultLineHeight(for: NSFont.systemFont(ofSize: fontSize))
+        let paragraphHeights = lineHeight * CGFloat(visibleCount)
+        let paragraphGaps = stackSpacing * CGFloat(max(visibleCount - 1, 0))
+        return ceil(paragraphHeights + paragraphGaps + (verticalPadding * 2))
+    }
+
+    static var cardHeight: CGFloat {
+        cardHeight(forVisibleParagraphs: visibleParagraphCount)
+    }
+}
 
 struct CardPreviewPane: View {
     let paragraphs: [String]
@@ -26,15 +49,16 @@ struct CardPreviewPane: View {
             CardDisplayView(
                 paragraphs: previewWindowParagraphs,
                 activeIndex: 0,
-                fontSize: 20,
+                fontSize: CardPreviewMetrics.fontSize,
                 highlightCurrentParagraph: false,
-                stackSpacing: 10,
-                paragraphLineSpacing: 20 * 0.16,
-                horizontalPadding: 18,
-                verticalPadding: 16,
-                paragraphOpacities: previewParagraphOpacities
+                stackSpacing: CardPreviewMetrics.stackSpacing,
+                paragraphLineSpacing: CardPreviewMetrics.paragraphLineSpacing,
+                horizontalPadding: CardPreviewMetrics.horizontalPadding,
+                verticalPadding: CardPreviewMetrics.verticalPadding,
+                paragraphOpacities: previewParagraphOpacities,
+                paragraphLineLimit: 1
             )
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .frame(maxWidth: .infinity, minHeight: CardPreviewMetrics.cardHeight, maxHeight: CardPreviewMetrics.cardHeight, alignment: .topLeading)
             .background(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .fill(Color(nsColor: NSColor(calibratedWhite: 0.14, alpha: 1)))
