@@ -183,6 +183,36 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(details.description, "Detailed failure message")
     }
 
+    func testCardDetailViewPrepareForCardChangeClearsSaveErrorAndResetsActiveParagraph() {
+        var saveErrorMessage: String? = "Detailed failure message"
+        var reportedParagraph: Int? = 2
+
+        CardDetailView.prepareForCardChange(
+            saveErrorMessage: &saveErrorMessage,
+            using: { reportedParagraph = $0 }
+        )
+
+        XCTAssertNil(saveErrorMessage)
+        XCTAssertNil(reportedParagraph)
+    }
+
+    @MainActor
+    func testCardDetailViewInstallAndRestoreUndoManagerPreservesPreviousValue() throws {
+        let context = try makeInMemoryContext()
+        let previousUndoManager = UndoManager()
+        let currentUndoManager = UndoManager()
+        context.undoManager = previousUndoManager
+
+        let capturedUndoManager = CardDetailView.installUndoManager(currentUndoManager, in: context)
+
+        XCTAssertTrue(capturedUndoManager === previousUndoManager)
+        XCTAssertTrue(context.undoManager === currentUndoManager)
+
+        CardDetailView.restoreUndoManager(capturedUndoManager, in: context)
+
+        XCTAssertTrue(context.undoManager === previousUndoManager)
+    }
+
     func testCardListViewHandleMutationSaveFailurePresentsErrorAndBeeps() {
         enum SampleError: Error { case failure }
 
@@ -204,6 +234,21 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(presented?.fallbackMessage, "The card could not be created.")
         XCTAssertTrue(presented?.error is SampleError)
         XCTAssertEqual(beepCallCount, 1)
+    }
+
+    func testCardListViewPresentableSaveErrorMessageUsesFallbackInsteadOfLocalizedDescription() {
+        let error = NSError(
+            domain: "CardListView",
+            code: 7,
+            userInfo: [NSLocalizedDescriptionKey: "Detailed internal failure"]
+        )
+
+        let message = CardListView.presentableSaveErrorMessage(
+            for: error,
+            fallbackMessage: "The card could not be deleted."
+        )
+
+        XCTAssertEqual(message, "The card could not be deleted.")
     }
 
     @MainActor
@@ -280,6 +325,23 @@ final class ModelTests: XCTestCase {
             }
             XCTAssertEqual(missingID, cardID)
         }
+    }
+
+    @MainActor
+    func testCardListViewDeleteCardRemovesMatchingCardOnly() throws {
+        let context = try makeInMemoryContext()
+        let firstCard = CardModel(body: "First", order: 0)
+        let secondCard = CardModel(body: "Second", order: 1)
+        context.insert(firstCard)
+        context.insert(secondCard)
+        try context.save()
+
+        try CardListView.deleteCard(withID: firstCard.id, in: context)
+        try context.save()
+
+        let cards = try context.fetch(FetchDescriptor<CardModel>())
+        XCTAssertEqual(cards.count, 1)
+        XCTAssertEqual(cards.first?.id, secondCard.id)
     }
 
     func testPrefsModelCustomPresetsRoundtrip() {

@@ -1,8 +1,14 @@
 import AppKit
+import OSLog
 import SwiftData
 import SwiftUI
 
 struct CardListView: View {
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "CunningPaper",
+        category: "CardListView"
+    )
+
     enum MutationError: LocalizedError {
         case cardNotFound(UUID)
 
@@ -118,8 +124,11 @@ struct CardListView: View {
     }
 
     static func deleteCard(withID cardID: UUID, in mutationContext: ModelContext) throws {
-        let cards = try mutationContext.fetch(FetchDescriptor<CardModel>())
-        guard let cardToDelete = cards.first(where: { $0.id == cardID }) else {
+        var descriptor = FetchDescriptor<CardModel>(
+            predicate: #Predicate<CardModel> { $0.id == cardID }
+        )
+        descriptor.fetchLimit = 1
+        guard let cardToDelete = try mutationContext.fetch(descriptor).first else {
             throw MutationError.cardNotFound(cardID)
         }
         mutationContext.delete(cardToDelete)
@@ -177,8 +186,12 @@ struct CardListView: View {
     }
 
     private func presentSaveError(_ error: Error, fallbackMessage: String) {
-        let description = error.localizedDescription
-        errorMessage = description.isEmpty ? fallbackMessage : description
+        let details = Self.logSafeSaveErrorDetails(for: error)
+        let context = Self.logContext(for: error)
+        Self.logger.error(
+            "Failed to save card list changes: domain=\(details.domain, privacy: .public) code=\(details.code, privacy: .public) description=\(details.description, privacy: .private) context=\(context, privacy: .public)"
+        )
+        errorMessage = Self.presentableSaveErrorMessage(for: error, fallbackMessage: fallbackMessage)
     }
 
     static func handleMutationSaveFailure(
@@ -219,5 +232,21 @@ struct CardListView: View {
             NSLog("Failed to save card list changes: %@", error.localizedDescription)
             return .failure(error)
         }
+    }
+
+    static func presentableSaveErrorMessage(for error: Error, fallbackMessage: String) -> String {
+        fallbackMessage
+    }
+
+    static func logSafeSaveErrorDetails(for error: Error) -> (domain: String, code: Int, description: String) {
+        let nsError = error as NSError
+        return (nsError.domain, nsError.code, error.localizedDescription)
+    }
+
+    static func logContext(for error: Error) -> String {
+        guard case MutationError.cardNotFound(let cardID) = error else {
+            return "none"
+        }
+        return "cardID=\(cardID.uuidString)"
     }
 }

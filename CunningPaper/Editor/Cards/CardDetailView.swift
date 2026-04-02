@@ -11,6 +11,7 @@ struct CardDetailView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.undoManager) private var undoManager
     @State private var saveErrorMessage: String?
+    @State private var previousUndoManager: UndoManager?
 
     let card: CardModel
     let onActiveParagraphChange: (Int?) -> Void
@@ -35,14 +36,18 @@ struct CardDetailView: View {
             .padding(.bottom, 16)
         }
         .onAppear {
-            context.undoManager = undoManager
+            previousUndoManager = Self.installUndoManager(undoManager, in: context)
         }
         .onChange(of: card.id) { _, _ in
-            Self.resetActiveParagraph(using: onActiveParagraphChange)
+            Self.prepareForCardChange(
+                saveErrorMessage: &saveErrorMessage,
+                using: onActiveParagraphChange
+            )
         }
         .onDisappear {
             Self.resetActiveParagraph(using: onActiveParagraphChange)
-            context.undoManager = nil
+            Self.restoreUndoManager(previousUndoManager, in: context)
+            previousUndoManager = nil
         }
         .alert("Couldn't Save Changes", isPresented: saveErrorPresented) {
             Button("OK") {
@@ -119,5 +124,23 @@ struct CardDetailView: View {
 
     static func resetActiveParagraph(using onActiveParagraphChange: (Int?) -> Void) {
         onActiveParagraphChange(nil)
+    }
+
+    static func prepareForCardChange(
+        saveErrorMessage: inout String?,
+        using onActiveParagraphChange: (Int?) -> Void
+    ) {
+        saveErrorMessage = nil
+        resetActiveParagraph(using: onActiveParagraphChange)
+    }
+
+    static func installUndoManager(_ undoManager: UndoManager?, in context: ModelContext) -> UndoManager? {
+        let previousUndoManager = context.undoManager
+        context.undoManager = undoManager
+        return previousUndoManager
+    }
+
+    static func restoreUndoManager(_ undoManager: UndoManager?, in context: ModelContext) {
+        context.undoManager = undoManager
     }
 }
