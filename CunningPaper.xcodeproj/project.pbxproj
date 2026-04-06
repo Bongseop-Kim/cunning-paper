@@ -43,6 +43,13 @@
 		AA00001B0000000000000001 /* CunningPaperTests/GridMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10001B0000000000000001 /* CunningPaperTests/GridMathTests.swift */; };
 		AA00001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift */; };
 		AA0000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift */; };
+		AA00002A0000000000000001 /* CunningPaperTests/ReadingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10002A0000000000000001 /* CunningPaperTests/ReadingEngineTests.swift */; };
+		AA00002B0000000000000001 /* ReadingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10002B0000000000000001 /* ReadingMode.swift */; };
+		AA00002C0000000000000001 /* CunningPaperTests/SpeechRecognizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10002C0000000000000001 /* CunningPaperTests/SpeechRecognizerTests.swift */; };
+		AA00002D0000000000000001 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10002D0000000000000001 /* SpeechRecognizer.swift */; };
+		AA00002E0000000000000001 /* TextSegmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10002E0000000000000001 /* TextSegmentation.swift */; };
+		AA00002F0000000000000001 /* MarqueeTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10002F0000000000000001 /* MarqueeTextView.swift */; };
+		AA0000300000000000000001 /* ReadingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000300000000000000001 /* ReadingEngine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +99,13 @@
 		AA10001B0000000000000001 /* CunningPaperTests/GridMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/GridMathTests.swift; sourceTree = SOURCE_ROOT; };
 		AA10001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/ZonePickerMathTests.swift; sourceTree = SOURCE_ROOT; };
 		AA1000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/ZonePickerPresentationTests.swift; sourceTree = SOURCE_ROOT; };
+		AA10002A0000000000000001 /* CunningPaperTests/ReadingEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/ReadingEngineTests.swift; sourceTree = SOURCE_ROOT; };
+		AA10002B0000000000000001 /* ReadingMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Reading/ReadingMode.swift; sourceTree = SOURCE_ROOT; };
+		AA10002C0000000000000001 /* CunningPaperTests/SpeechRecognizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/SpeechRecognizerTests.swift; sourceTree = SOURCE_ROOT; };
+		AA10002D0000000000000001 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Reading/SpeechRecognizer.swift; sourceTree = SOURCE_ROOT; };
+		AA10002E0000000000000001 /* TextSegmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Reading/TextSegmentation.swift; sourceTree = SOURCE_ROOT; };
+		AA10002F0000000000000001 /* MarqueeTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Overlay/MarqueeTextView.swift; sourceTree = SOURCE_ROOT; };
+		AA1000300000000000000001 /* ReadingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Reading/ReadingEngine.swift; sourceTree = SOURCE_ROOT; };
 		AA10001D0000000000000001 /* CunningPaper/CunningPaper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CunningPaper/CunningPaper.entitlements; sourceTree = SOURCE_ROOT; };
 		AA10001E0000000000000001 /* CunningPaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CunningPaper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA10001F0000000000000001 /* CunningPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CunningPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -131,6 +145,7 @@
 				AA1000060000000000000001 /* OverlayPanel.swift */,
 				AA1000070000000000000001 /* CardDisplayView.swift */,
 				AA1000080000000000000001 /* JumpPanelView.swift */,
+				AA10002F0000000000000001 /* MarqueeTextView.swift */,
 				AA10000A0000000000000001 /* OverlayView.swift */,
 			);
 			path = Overlay;
@@ -173,6 +188,17 @@
 				AA1000140000000000000001 /* TrayController.swift */,
 			);
 			path = System;
+			sourceTree = "<group>";
+		};
+		AA1001040000000000000001 /* Reading */ = {
+			isa = PBXGroup;
+			children = (
+				AA1000300000000000000001 /* ReadingEngine.swift */,
+				AA10002B0000000000000001 /* ReadingMode.swift */,
+				AA10002D0000000000000001 /* SpeechRecognizer.swift */,
+				AA10002E0000000000000001 /* TextSegmentation.swift */,
+			);
+			path = Reading;
 			sourceTree = "<group>";
 		};
 		9D52E8B02F7D35BB0028A0DC /* Cards */ = {
@@ -223,6 +249,7 @@
 			isa = PBXGroup;
 			children = (
 				9D52E8AE2F7D35450028A0DC /* System */,
+				AA1001040000000000000001 /* Reading */,
 				9D52E8AD2F7D35120028A0DC /* Utilities */,
 				9D52E8AC2F7D34E80028A0DC /* Editor */,
 				9D52E8AB2F7D349E0028A0DC /* Support */,
@@ -243,6 +270,8 @@
 				AA10001B0000000000000001 /* CunningPaperTests/GridMathTests.swift */,
 				AA10001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift */,
 				AA1000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift */,
+				AA10002A0000000000000001 /* CunningPaperTests/ReadingEngineTests.swift */,
+				AA10002C0000000000000001 /* CunningPaperTests/SpeechRecognizerTests.swift */,
 			);
 			path = CunningPaperTests;
 			sourceTree = "<group>";
@@ -385,6 +414,11 @@
 				AA0000220000000000000001 /* ParagraphFocus.swift in Sources */,
 				AA0000180000000000000001 /* KeyboardShortcuts.swift in Sources */,
 				AA0000250000000000000001 /* ZonePickerPresentation.swift in Sources */,
+				AA00002B0000000000000001 /* ReadingMode.swift in Sources */,
+				AA00002D0000000000000001 /* SpeechRecognizer.swift in Sources */,
+				AA00002E0000000000000001 /* TextSegmentation.swift in Sources */,
+				AA00002F0000000000000001 /* MarqueeTextView.swift in Sources */,
+				AA0000300000000000000001 /* ReadingEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,6 +431,8 @@
 				AA00001B0000000000000001 /* CunningPaperTests/GridMathTests.swift in Sources */,
 				AA00001C0000000000000001 /* CunningPaperTests/ZonePickerMathTests.swift in Sources */,
 				AA0000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift in Sources */,
+				AA00002A0000000000000001 /* CunningPaperTests/ReadingEngineTests.swift in Sources */,
+				AA00002C0000000000000001 /* CunningPaperTests/SpeechRecognizerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,6 +458,8 @@
 				ENABLE_TESTABILITY = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CunningPaper needs microphone access for voice tracking mode.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CunningPaper uses on-device speech recognition to highlight words as you read.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -447,6 +485,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "CunningPaper needs microphone access for voice tracking mode.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "CunningPaper uses on-device speech recognition to highlight words as you read.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

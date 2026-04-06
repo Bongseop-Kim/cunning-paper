@@ -7,6 +7,7 @@ enum HotkeyAction: String, CaseIterable {
     case nextLine
     case prevLine
     case toggle
+    case stop
 }
 
 extension KeyboardShortcuts.Name {
@@ -16,6 +17,7 @@ extension KeyboardShortcuts.Name {
     static let nextLine = Self("cunningPaper.nextLine")
     static let prevLine = Self("cunningPaper.prevLine")
     static let toggle = Self("cunningPaper.toggle")
+    static let stop = Self("cunningPaper.stop")
 }
 
 extension Notification.Name {
@@ -33,6 +35,7 @@ final class HotkeyManager {
         register(.nextLine, name: .nextLine)
         register(.prevLine, name: .prevLine)
         register(.toggle, name: .toggle)
+        register(.stop, name: .stop)
         KeyboardShortcuts.startMonitoring()
     }
 

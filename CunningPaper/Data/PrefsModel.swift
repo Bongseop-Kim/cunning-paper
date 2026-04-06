@@ -57,6 +57,9 @@ final class PrefsModel {
     var highlightCurrentParagraph: Bool
     var hotkeysData: Data
     var customPresetsData: Data
+    var readingModeRaw: String
+    var autoScrollSpeed: Double
+    var speechLanguage: String
 
     init() {
         overlayX = 80
@@ -69,6 +72,9 @@ final class PrefsModel {
         highlightCurrentParagraph = true
         hotkeysData = (try? JSONEncoder().encode(HotkeyConfig.default)) ?? Data()
         customPresetsData = (try? JSONEncoder().encode([ZonePreset]())) ?? Data()
+        readingModeRaw = ReadingMode.voiceTracking.rawValue
+        autoScrollSpeed = 3.0
+        speechLanguage = "ko-KR"
     }
 
     var hotkeys: HotkeyConfig {
@@ -91,5 +97,10 @@ final class PrefsModel {
             overlayWidth = newValue.width
             overlayHeight = newValue.height
         }
+    }
+
+    var readingMode: ReadingMode {
+        get { ReadingMode(rawValue: readingModeRaw) ?? .voiceTracking }
+        set { readingModeRaw = newValue.rawValue }
     }
 }
