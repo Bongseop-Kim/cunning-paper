@@ -1,3 +1,3 @@
 # Repository Instructions
 
-- Do not review documentation files under `docs/` during review passes unless the user explicitly asks for doc review.
+- Do not review `.md` files during review passes unless the user explicitly asks for Markdown or doc review.

@@ -45,51 +45,216 @@ struct ZonePreset: Codable, Identifiable, Equatable {
     ]
 }
 
-@Model
-final class PrefsModel {
-    var overlayX: Double
-    var overlayY: Double
-    var overlayWidth: Double
-    var overlayHeight: Double
-    var fontSize: Double
-    var lineHeight: Double
-    var opacity: Double
-    var highlightCurrentParagraph: Bool
-    var hotkeysData: Data
-    var customPresetsData: Data
+private enum PrefsDefaults {
+    static let readingModeRaw = ReadingMode.voiceTracking.rawValue
+    static let autoScrollSpeed = 3.0
+    static let speechLanguage = "ko-KR"
+}
 
-    init() {
-        overlayX = 80
-        overlayY = 80
-        overlayWidth = 520
-        overlayHeight = 180
-        fontSize = 24
-        lineHeight = 1.6
-        opacity = 0.85
-        highlightCurrentParagraph = true
-        hotkeysData = (try? JSONEncoder().encode(HotkeyConfig.default)) ?? Data()
-        customPresetsData = (try? JSONEncoder().encode([ZonePreset]())) ?? Data()
-    }
+extension CunningPaperSchemaV1 {
+    @Model
+    final class PrefsModel {
+        var overlayX: Double
+        var overlayY: Double
+        var overlayWidth: Double
+        var overlayHeight: Double
+        var fontSize: Double
+        var lineHeight: Double
+        var opacity: Double
+        var highlightCurrentParagraph: Bool
+        var hotkeysData: Data
+        var customPresetsData: Data
 
-    var hotkeys: HotkeyConfig {
-        get { (try? JSONDecoder().decode(HotkeyConfig.self, from: hotkeysData)) ?? .default }
-        set { hotkeysData = (try? JSONEncoder().encode(newValue)) ?? Data() }
-    }
-
-    var customPresets: [ZonePreset] {
-        get { (try? JSONDecoder().decode([ZonePreset].self, from: customPresetsData)) ?? [] }
-        set { customPresetsData = (try? JSONEncoder().encode(newValue)) ?? Data() }
-    }
-
-    var overlayFrame: CGRect {
-        get {
-            CGRect(x: overlayX, y: overlayY, width: overlayWidth, height: overlayHeight)
+        init() {
+            overlayX = 80
+            overlayY = 80
+            overlayWidth = 520
+            overlayHeight = 180
+            fontSize = 24
+            lineHeight = 1.6
+            opacity = 0.85
+            highlightCurrentParagraph = true
+            hotkeysData = (try? JSONEncoder().encode(HotkeyConfig.default)) ?? Data()
+            customPresetsData = (try? JSONEncoder().encode([ZonePreset]())) ?? Data()
         }
-        set {
-            overlayX = newValue.origin.x
-            overlayY = newValue.origin.y
-            overlayWidth = newValue.width
-            overlayHeight = newValue.height
+
+        var hotkeys: HotkeyConfig {
+            get { (try? JSONDecoder().decode(HotkeyConfig.self, from: hotkeysData)) ?? .default }
+            set { hotkeysData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        }
+
+        var customPresets: [ZonePreset] {
+            get { (try? JSONDecoder().decode([ZonePreset].self, from: customPresetsData)) ?? [] }
+            set { customPresetsData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        }
+
+        var overlayFrame: CGRect {
+            get {
+                CGRect(x: overlayX, y: overlayY, width: overlayWidth, height: overlayHeight)
+            }
+            set {
+                overlayX = newValue.origin.x
+                overlayY = newValue.origin.y
+                overlayWidth = newValue.width
+                overlayHeight = newValue.height
+            }
         }
     }
 }
+
+extension CunningPaperSchemaV2 {
+    @Model
+    final class PrefsModel {
+        var overlayX: Double
+        var overlayY: Double
+        var overlayWidth: Double
+        var overlayHeight: Double
+        var fontSize: Double
+        var lineHeight: Double
+        var opacity: Double
+        var highlightCurrentParagraph: Bool
+        var hotkeysData: Data
+        var customPresetsData: Data
+        var readingModeRaw: String?
+        var autoScrollSpeed: Double?
+        var speechLanguage: String?
+
+        init() {
+            overlayX = 80
+            overlayY = 80
+            overlayWidth = 520
+            overlayHeight = 180
+            fontSize = 24
+            lineHeight = 1.6
+            opacity = 0.85
+            highlightCurrentParagraph = true
+            hotkeysData = (try? JSONEncoder().encode(HotkeyConfig.default)) ?? Data()
+            customPresetsData = (try? JSONEncoder().encode([ZonePreset]())) ?? Data()
+            readingModeRaw = PrefsDefaults.readingModeRaw
+            autoScrollSpeed = PrefsDefaults.autoScrollSpeed
+            speechLanguage = PrefsDefaults.speechLanguage
+        }
+
+        var hotkeys: HotkeyConfig {
+            get { (try? JSONDecoder().decode(HotkeyConfig.self, from: hotkeysData)) ?? .default }
+            set { hotkeysData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        }
+
+        var customPresets: [ZonePreset] {
+            get { (try? JSONDecoder().decode([ZonePreset].self, from: customPresetsData)) ?? [] }
+            set { customPresetsData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        }
+
+        var overlayFrame: CGRect {
+            get {
+                CGRect(x: overlayX, y: overlayY, width: overlayWidth, height: overlayHeight)
+            }
+            set {
+                overlayX = newValue.origin.x
+                overlayY = newValue.origin.y
+                overlayWidth = newValue.width
+                overlayHeight = newValue.height
+            }
+        }
+    }
+}
+
+extension CunningPaperSchemaV3 {
+    @Model
+    final class PrefsModel {
+        var overlayX: Double
+        var overlayY: Double
+        var overlayWidth: Double
+        var overlayHeight: Double
+        var fontSize: Double
+        var lineHeight: Double
+        var opacity: Double
+        var highlightCurrentParagraph: Bool
+        var hotkeysData: Data
+        var customPresetsData: Data
+        var readingModeRaw: String
+        var autoScrollSpeed: Double
+        var speechLanguage: String
+
+        init() {
+            overlayX = 80
+            overlayY = 80
+            overlayWidth = 520
+            overlayHeight = 180
+            fontSize = 24
+            lineHeight = 1.6
+            opacity = 0.85
+            highlightCurrentParagraph = true
+            hotkeysData = (try? JSONEncoder().encode(HotkeyConfig.default)) ?? Data()
+            customPresetsData = (try? JSONEncoder().encode([ZonePreset]())) ?? Data()
+            readingModeRaw = PrefsDefaults.readingModeRaw
+            autoScrollSpeed = PrefsDefaults.autoScrollSpeed
+            speechLanguage = PrefsDefaults.speechLanguage
+        }
+
+        var hotkeys: HotkeyConfig {
+            get { (try? JSONDecoder().decode(HotkeyConfig.self, from: hotkeysData)) ?? .default }
+            set { hotkeysData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        }
+
+        var customPresets: [ZonePreset] {
+            get { (try? JSONDecoder().decode([ZonePreset].self, from: customPresetsData)) ?? [] }
+            set { customPresetsData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        }
+
+        var overlayFrame: CGRect {
+            get {
+                CGRect(x: overlayX, y: overlayY, width: overlayWidth, height: overlayHeight)
+            }
+            set {
+                overlayX = newValue.origin.x
+                overlayY = newValue.origin.y
+                overlayWidth = newValue.width
+                overlayHeight = newValue.height
+            }
+        }
+
+        var readingMode: ReadingMode {
+            get { ReadingMode(rawValue: readingModeRaw) ?? .voiceTracking }
+            set { readingModeRaw = newValue.rawValue }
+        }
+    }
+}
+
+enum CunningPaperMigrationPlan: SchemaMigrationPlan {
+    static var schemas: [any VersionedSchema.Type] {
+        [
+            CunningPaperSchemaV1.self,
+            CunningPaperSchemaV2.self,
+            CunningPaperSchemaV3.self,
+        ]
+    }
+
+    static var stages: [MigrationStage] {
+        [
+            .custom(
+                fromVersion: CunningPaperSchemaV1.self,
+                toVersion: CunningPaperSchemaV2.self,
+                willMigrate: nil,
+                didMigrate: { context in
+                    let descriptor = FetchDescriptor<CunningPaperSchemaV2.PrefsModel>()
+                    let prefs = try context.fetch(descriptor)
+
+                    for pref in prefs {
+                        pref.readingModeRaw = pref.readingModeRaw ?? PrefsDefaults.readingModeRaw
+                        pref.autoScrollSpeed = pref.autoScrollSpeed ?? PrefsDefaults.autoScrollSpeed
+                        pref.speechLanguage = pref.speechLanguage ?? PrefsDefaults.speechLanguage
+                    }
+
+                    try context.save()
+                }
+            ),
+            .lightweight(
+                fromVersion: CunningPaperSchemaV2.self,
+                toVersion: CunningPaperSchemaV3.self
+            ),
+        ]
+    }
+}
+
+typealias PrefsModel = CunningPaperSchemaV3.PrefsModel

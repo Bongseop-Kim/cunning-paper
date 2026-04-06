@@ -11,8 +11,8 @@ struct OverlayView: View {
     @Query(sort: \CardModel.order) private var cards: [CardModel]
     @Query private var prefsArray: [PrefsModel]
     @State private var currentIndex = 0
-    @State private var activeParagraphIndex = 0
     @State private var activePanel: ActivePanel = .none
+    @State private var engine = ReadingEngine()
 
     private var prefs: PrefsModel? { prefsArray.first }
 
@@ -21,34 +21,55 @@ struct OverlayView: View {
         return cards[currentIndex]
     }
 
-    init() {}
-
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 14)
                 .fill(Color.black.opacity(prefs?.opacity ?? 0.85))
 
-            CardDisplayView(
-                paragraphs: currentCard?.paragraphs ?? ["No cards yet"],
-                activeIndex: activeParagraphIndex,
-                fontSize: prefs?.fontSize ?? 24,
-                highlightCurrentParagraph: prefs?.highlightCurrentParagraph ?? true
+            MarqueeTextView(
+                text: engine.fullText.isEmpty ? (currentCard?.body ?? "No cards yet") : engine.fullText,
+                highlightedCharCount: engine.highlightedCharCount,
+                fontSize: prefs?.fontSize ?? 24
             )
+            .padding(6)
 
             if activePanel == .jump {
                 JumpPanelView(
                     totalCards: cards.count,
                     onJump: { index in
                         currentIndex = index
-                        activeParagraphIndex = 0
+                        restartEngine()
                         closePanel()
                     },
                     onClose: closePanel
                 )
             }
-
         }
         .padding(6)
+        .onAppear {
+            restartEngine()
+        }
+        .onDisappear {
+            engine.stop()
+        }
+        .onChange(of: prefs?.readingMode) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: prefs?.autoScrollSpeed) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: prefs?.speechLanguage) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: currentCard?.id) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: currentCard?.body) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: cards.count) { _, _ in
+            restartEngine()
+        }
         .onChange(of: activePanel) { _, panel in
             updateClickThrough(for: panel)
         }
@@ -64,19 +85,45 @@ struct OverlayView: View {
     private func handleHotkey(_ action: HotkeyAction) {
         switch action {
         case .next:
-            if currentIndex < cards.count - 1 { currentIndex += 1 }
+            guard currentIndex < cards.count - 1 else { return }
+            currentIndex += 1
+            restartEngine()
         case .prev:
-            if currentIndex > 0 { currentIndex -= 1 }
+            guard currentIndex > 0 else { return }
+            currentIndex -= 1
+            restartEngine()
         case .jump:
             activePanel = .jump
         case .nextLine:
-            let maxIndex = max((currentCard?.paragraphs.count ?? 1) - 1, 0)
-            if activeParagraphIndex < maxIndex { activeParagraphIndex += 1 }
+            if prefs?.readingMode == .manual {
+                engine.advanceParagraph()
+            } else {
+                provideUnsupportedHotkeyFeedback()
+            }
         case .prevLine:
-            if activeParagraphIndex > 0 { activeParagraphIndex -= 1 }
+            if prefs?.readingMode == .manual {
+                engine.retractParagraph()
+            } else {
+                provideUnsupportedHotkeyFeedback()
+            }
+        case .stop:
+            engine.stop()
         case .toggle:
             break
         }
+    }
+
+    private func restartEngine() {
+        guard let prefs, let card = currentCard else {
+            engine.stop()
+            return
+        }
+        engine.start(
+            card: card,
+            mode: prefs.readingMode,
+            speed: prefs.autoScrollSpeed,
+            language: prefs.speechLanguage
+        )
     }
 
     private func closePanel() {
@@ -86,5 +133,9 @@ struct OverlayView: View {
     private func updateClickThrough(for panel: ActivePanel) {
         guard let overlayWindow = NSApp.windows.first(where: { $0 is OverlayPanel }) else { return }
         overlayWindow.ignoresMouseEvents = (panel == .none)
+    }
+
+    private func provideUnsupportedHotkeyFeedback() {
+        NSSound.beep()
     }
 }

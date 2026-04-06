@@ -7,13 +7,14 @@ struct CunningPaperApp: App {
     @State private var coordinator = AppCoordinator()
 
     static let modelContainer: ModelContainer = {
-        let schema = Schema([
-            CardModel.self,
-            PrefsModel.self,
-        ])
+        let schema = Schema(versionedSchema: CunningPaperSchemaV3.self)
         let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
-            return try ModelContainer(for: schema, configurations: [configuration])
+            return try ModelContainer(
+                for: schema,
+                migrationPlan: CunningPaperMigrationPlan.self,
+                configurations: [configuration]
+            )
         } catch {
             fatalError("Failed to create model container: \(error)")
         }

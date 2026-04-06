@@ -16,38 +16,30 @@ final class MigrationServiceTests: XCTestCase {
             try? FileManager.default.removeItem(at: storeURL.deletingLastPathComponent())
         }
 
+        let legacySchema = Schema(versionedSchema: CunningPaperSchemaV1.self)
         let legacyConfig = ModelConfiguration(
-            "BodyOnlyStore",
-            schema: Schema([
-                BodyOnlyStoreCardModel.self,
-                BodyOnlyStorePrefsModel.self,
-            ]),
+            schema: legacySchema,
             url: storeURL
         )
         let legacyContainer = try ModelContainer(
-            for: BodyOnlyStoreCardModel.self,
-            BodyOnlyStorePrefsModel.self,
+            for: legacySchema,
             configurations: legacyConfig
         )
         let legacyContext = ModelContext(legacyContainer)
-        legacyContext.insert(BodyOnlyStoreCardModel(body: "Persisted body"))
-        legacyContext.insert(BodyOnlyStorePrefsModel())
+        legacyContext.insert(CunningPaperSchemaV1.CardModel(body: "Persisted body"))
+        legacyContext.insert(CunningPaperSchemaV1.PrefsModel())
         try legacyContext.save()
 
+        let currentSchema = Schema(versionedSchema: CunningPaperSchemaV3.self)
         let currentConfig = ModelConfiguration(
-            schema: Schema([
-                CardModel.self,
-                PrefsModel.self,
-            ]),
+            schema: currentSchema,
             url: storeURL
         )
 
         let currentContainer = try XCTUnwrap(
             try? ModelContainer(
-                for: Schema([
-                    CardModel.self,
-                    PrefsModel.self,
-                ]),
+                for: currentSchema,
+                migrationPlan: CunningPaperMigrationPlan.self,
                 configurations: [currentConfig]
             )
         )
@@ -334,55 +326,5 @@ final class MigrationServiceTests: XCTestCase {
             moveItemCallCount += 1
             throw CocoaError(.fileWriteUnknown)
         }
-    }
-}
-
-@Model
-private final class BodyOnlyStoreCardModel {
-    var id: UUID
-    var body: String
-    var order: Double
-    var createdAt: Date
-    var updatedAt: Date
-
-    init(
-        id: UUID = UUID(),
-        body: String,
-        order: Double = 0,
-        createdAt: Date = Date(),
-        updatedAt: Date = Date()
-    ) {
-        self.id = id
-        self.body = body
-        self.order = order
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
-    }
-}
-
-@Model
-private final class BodyOnlyStorePrefsModel {
-    var overlayX: Double
-    var overlayY: Double
-    var overlayWidth: Double
-    var overlayHeight: Double
-    var fontSize: Double
-    var lineHeight: Double
-    var opacity: Double
-    var highlightCurrentParagraph: Bool
-    var hotkeysData: Data
-    var customPresetsData: Data
-
-    init() {
-        overlayX = 80
-        overlayY = 80
-        overlayWidth = 520
-        overlayHeight = 180
-        fontSize = 24
-        lineHeight = 1.6
-        opacity = 0.85
-        highlightCurrentParagraph = true
-        hotkeysData = (try? JSONEncoder().encode(HotkeyConfig.default)) ?? Data()
-        customPresetsData = (try? JSONEncoder().encode([ZonePreset]())) ?? Data()
     }
 }

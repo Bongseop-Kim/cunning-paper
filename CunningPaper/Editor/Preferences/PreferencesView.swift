@@ -1,3 +1,4 @@
+import Foundation
 import SwiftData
 import SwiftUI
 
@@ -65,6 +66,101 @@ struct PreferencesView: View {
                     }
 
                     preferenceSection(
+                        title: "Reading",
+                        description: "Choose how the overlay guides you through your script."
+                    ) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            HStack(alignment: .center, spacing: 16) {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text("Reading Mode")
+                                        .font(.system(size: 13, weight: .medium))
+
+                                    Text("Voice Tracking highlights words as you speak. Auto-scroll advances at a set speed. Manual uses hotkeys.")
+                                        .font(.system(size: 12))
+                                        .foregroundStyle(.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+
+                                Spacer(minLength: 12)
+
+                                Picker("", selection: Binding(
+                                    get: { prefs.readingMode },
+                                    set: {
+                                        prefs.readingMode = $0
+                                        savePreferences()
+                                    }
+                                )) {
+                                    Text("Voice Tracking").tag(ReadingMode.voiceTracking)
+                                    Text("Auto-scroll").tag(ReadingMode.autoScroll)
+                                    Text("Manual").tag(ReadingMode.manual)
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(width: 280)
+                                .labelsHidden()
+                                .accessibilityLabel("Reading Mode")
+                                .accessibilityHint("Choose how the overlay advances while reading.")
+                            }
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 16)
+                            .background(rowBackground(showDivider: true))
+
+                            sliderRow(
+                                title: "Scroll Speed",
+                                detail: "Characters per second. Only applies in Auto-scroll mode.",
+                                valueText: String(format: "%.1f chars/s", prefs.autoScrollSpeed),
+                                value: Binding(
+                                    get: { prefs.autoScrollSpeed },
+                                    set: {
+                                        prefs.autoScrollSpeed = $0
+                                        savePreferences()
+                                    }
+                                ),
+                                range: 0.5...10.0,
+                                step: 0.5,
+                                showDivider: true
+                            )
+                            .disabled(prefs.readingMode != .autoScroll)
+                            .opacity(prefs.readingMode == .autoScroll ? 1 : 0.4)
+
+                            HStack(alignment: .center, spacing: 16) {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text("Recognition Language")
+                                        .font(.system(size: 13, weight: .medium))
+
+                                    Text("Language used for on-device speech recognition.")
+                                        .font(.system(size: 12))
+                                        .foregroundStyle(.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+
+                                Spacer(minLength: 12)
+
+                                Picker("", selection: Binding(
+                                    get: { prefs.speechLanguage },
+                                    set: {
+                                        prefs.speechLanguage = $0
+                                        savePreferences()
+                                    }
+                                )) {
+                                    Text("한국어").tag("ko-KR")
+                                    Text("English (US)").tag("en-US")
+                                    Text("日本語").tag("ja-JP")
+                                    Text("中文 (简体)").tag("zh-CN")
+                                }
+                                .frame(width: 200)
+                                .labelsHidden()
+                                .accessibilityLabel("Recognition Language")
+                                .accessibilityHint("Choose the language used for speech recognition.")
+                            }
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 16)
+                            .background(rowBackground(showDivider: false))
+                            .disabled(prefs.readingMode != .voiceTracking)
+                            .opacity(prefs.readingMode == .voiceTracking ? 1 : 0.4)
+                        }
+                    }
+
+                    preferenceSection(
                         title: "Shortcuts",
                         description: "Review and remap the keyboard actions used while presenting cards."
                     ) {
@@ -74,6 +170,7 @@ struct PreferencesView: View {
                             shortcutRow("Jump", name: .jump, showDivider: true)
                             shortcutRow("Next Paragraph", name: .nextLine, showDivider: true)
                             shortcutRow("Previous Paragraph", name: .prevLine, showDivider: true)
+                            shortcutRow("Stop Reading", name: .stop, showDivider: true)
                             shortcutRow("Toggle Overlay", name: .toggle, showDivider: false)
                         }
                     }
