@@ -48,6 +48,13 @@ final class SpeechRecognizerTests: XCTestCase {
         XCTAssertLessThanOrEqual(result, 11)
     }
 
+    func testCharLevelMatchDoesNotAdvanceOnUnrelatedMismatch() {
+        let sr = SpeechRecognizer()
+        sr.prepareForTesting(text: "abc")
+        let result = sr.charLevelMatch(spoken: "xyz")
+        XCTAssertEqual(result, 0)
+    }
+
     func testWordLevelMatchExact() {
         let sr = SpeechRecognizer()
         sr.prepareForTesting(text: "hello world")

@@ -50,6 +50,7 @@
 		AA00002E0000000000000001 /* TextSegmentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10002E0000000000000001 /* TextSegmentation.swift */; };
 		AA00002F0000000000000001 /* MarqueeTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10002F0000000000000001 /* MarqueeTextView.swift */; };
 		AA0000300000000000000001 /* ReadingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000300000000000000001 /* ReadingEngine.swift */; };
+		AA0000310000000000000001 /* CunningPaperTests/MarqueeTextViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000310000000000000001 /* CunningPaperTests/MarqueeTextViewTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +107,7 @@
 		AA10002E0000000000000001 /* TextSegmentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Reading/TextSegmentation.swift; sourceTree = SOURCE_ROOT; };
 		AA10002F0000000000000001 /* MarqueeTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Overlay/MarqueeTextView.swift; sourceTree = SOURCE_ROOT; };
 		AA1000300000000000000001 /* ReadingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaper/Reading/ReadingEngine.swift; sourceTree = SOURCE_ROOT; };
+		AA1000310000000000000001 /* CunningPaperTests/MarqueeTextViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CunningPaperTests/MarqueeTextViewTests.swift; sourceTree = SOURCE_ROOT; };
 		AA10001D0000000000000001 /* CunningPaper/CunningPaper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CunningPaper/CunningPaper.entitlements; sourceTree = SOURCE_ROOT; };
 		AA10001E0000000000000001 /* CunningPaper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CunningPaper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA10001F0000000000000001 /* CunningPaperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CunningPaperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -272,6 +274,7 @@
 				AA1000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift */,
 				AA10002A0000000000000001 /* CunningPaperTests/ReadingEngineTests.swift */,
 				AA10002C0000000000000001 /* CunningPaperTests/SpeechRecognizerTests.swift */,
+				AA1000310000000000000001 /* CunningPaperTests/MarqueeTextViewTests.swift */,
 			);
 			path = CunningPaperTests;
 			sourceTree = "<group>";
@@ -433,6 +436,7 @@
 				AA0000240000000000000001 /* CunningPaperTests/ZonePickerPresentationTests.swift in Sources */,
 				AA00002A0000000000000001 /* CunningPaperTests/ReadingEngineTests.swift in Sources */,
 				AA00002C0000000000000001 /* CunningPaperTests/SpeechRecognizerTests.swift in Sources */,
+				AA0000310000000000000001 /* CunningPaperTests/MarqueeTextViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

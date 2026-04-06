@@ -10,9 +10,14 @@ final class ReadingEngine {
     private var currentParagraphIndex = 0
     private var paragraphOffsets: [Int] = []
     private var scrollTimer: Timer?
-    private var speechRecognizer: SpeechRecognizer?
+    private let recognizerFactory: () -> any SpeechRecognizing
+    private var speechRecognizer: (any SpeechRecognizing)?
     private var pollingTimer: Timer?
     private var fractionalChars: Double = 0
+
+    init(recognizerFactory: @escaping () -> any SpeechRecognizing = { SpeechRecognizer() }) {
+        self.recognizerFactory = recognizerFactory
+    }
 
     func start(card: CardModel, mode: ReadingMode, speed: Double = 3.0, language: String = "ko-KR") {
         stop()
@@ -103,12 +108,21 @@ final class ReadingEngine {
             return
         }
 
-        let recognizer = SpeechRecognizer()
+        let recognizer = recognizerFactory()
         speechRecognizer = recognizer
-        recognizer.start(with: fullText, language: language)
+        guard recognizer.start(with: fullText, language: language) else {
+            stop()
+            return
+        }
 
-        pollingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self, weak recognizer] timer in
-            guard let self, let recognizer, self.isActive else {
+        pollingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+            guard let self, self.isActive, let recognizer = self.speechRecognizer else {
+                timer.invalidate()
+                return
+            }
+
+            if recognizer.isFailed || recognizer.lastError != nil {
+                self.stop()
                 timer.invalidate()
                 return
             }

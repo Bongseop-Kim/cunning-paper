@@ -61,6 +61,15 @@ struct OverlayView: View {
         .onChange(of: prefs?.speechLanguage) { _, _ in
             restartEngine()
         }
+        .onChange(of: currentCard?.id) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: currentCard?.body) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: cards.count) { _, _ in
+            restartEngine()
+        }
         .onChange(of: activePanel) { _, panel in
             updateClickThrough(for: panel)
         }
@@ -105,7 +114,10 @@ struct OverlayView: View {
     }
 
     private func restartEngine() {
-        guard let card = currentCard, let prefs else { return }
+        guard let prefs, let card = currentCard else {
+            engine.stop()
+            return
+        }
         engine.start(
             card: card,
             mode: prefs.readingMode,

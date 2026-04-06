@@ -4,11 +4,23 @@ import Foundation
 import Observation
 import Speech
 
+protocol SpeechRecognizing: AnyObject {
+    var recognizedCharCount: Int { get }
+    var lastError: String? { get }
+    var isFailed: Bool { get }
+
+    @discardableResult
+    func start(with text: String, language: String) -> Bool
+
+    func stop()
+}
+
 @Observable
-final class SpeechRecognizer {
+final class SpeechRecognizer: SpeechRecognizing {
     var recognizedCharCount: Int = 0
     var isListening: Bool = false
-    var error: String?
+    private(set) var lastError: String?
+    var isFailed: Bool { lastError != nil }
 
     private(set) var sourceText: String = ""
     private(set) var matchStartOffset: Int = 0
@@ -23,19 +35,21 @@ final class SpeechRecognizer {
     private var sessionGeneration = 0
     private var language = "ko-KR"
 
-    func start(with text: String, language: String = "ko-KR") {
+    @discardableResult
+    func start(with text: String, language: String = "ko-KR") -> Bool {
         cleanupRecognition()
         self.language = language
         sourceText = splitTextIntoWords(text).joined(separator: " ")
         recognizedCharCount = 0
         matchStartOffset = 0
         retryCount = 0
-        error = nil
+        lastError = nil
         sessionGeneration += 1
-        requestPermissionsAndBegin()
+        return requestPermissionsAndBegin()
     }
 
     func stop() {
+        sessionGeneration += 1
         isListening = false
         cleanupRecognition()
     }
@@ -46,22 +60,25 @@ final class SpeechRecognizer {
         recognizedCharCount = 0
     }
 
-    private func requestPermissionsAndBegin() {
+    @discardableResult
+    private func requestPermissionsAndBegin() -> Bool {
+        let myGen = sessionGeneration
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
         case .denied, .restricted:
-            error = "Microphone access denied. Enable in System Settings -> Privacy & Security -> Microphone."
-            return
+            lastError = "Microphone access denied. Enable in System Settings -> Privacy & Security -> Microphone."
+            return false
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .audio) { [weak self] granted in
                 DispatchQueue.main.async {
+                    guard let self, myGen == self.sessionGeneration else { return }
                     if granted {
-                        self?.requestSpeechAuthAndBegin()
+                        self.requestSpeechAuthAndBegin()
                     } else {
-                        self?.error = "Microphone access denied."
+                        self.lastError = "Microphone access denied."
                     }
                 }
             }
-            return
+            return true
         case .authorized:
             break
         @unknown default:
@@ -69,15 +86,18 @@ final class SpeechRecognizer {
         }
 
         requestSpeechAuthAndBegin()
+        return true
     }
 
     private func requestSpeechAuthAndBegin() {
+        let myGen = sessionGeneration
         SFSpeechRecognizer.requestAuthorization { [weak self] status in
             DispatchQueue.main.async {
+                guard let self, myGen == self.sessionGeneration else { return }
                 if status == .authorized {
-                    self?.beginRecognition()
+                    self.beginRecognition()
                 } else {
-                    self?.error = "Speech recognition not authorized. Enable in System Settings -> Privacy & Security -> Speech Recognition."
+                    self.lastError = "Speech recognition not authorized. Enable in System Settings -> Privacy & Security -> Speech Recognition."
                 }
             }
         }
@@ -98,9 +118,11 @@ final class SpeechRecognizer {
 
     private func scheduleBeginRecognition(after delay: TimeInterval) {
         pendingRestart?.cancel()
+        let currentGeneration = sessionGeneration
         let work = DispatchWorkItem { [weak self] in
-            self?.pendingRestart = nil
-            self?.beginRecognition()
+            guard let self, self.sessionGeneration == currentGeneration else { return }
+            self.pendingRestart = nil
+            self.beginRecognition()
         }
         pendingRestart = work
         DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
@@ -112,7 +134,7 @@ final class SpeechRecognizer {
 
         speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: language))
         guard let speechRecognizer, speechRecognizer.isAvailable else {
-            error = "Speech recognizer not available for language: \(language)"
+            lastError = "Speech recognizer not available for language: \(language)"
             return
         }
 
@@ -128,7 +150,7 @@ final class SpeechRecognizer {
                 retryCount += 1
                 scheduleBeginRecognition(after: 0.5)
             } else {
-                error = "Audio input unavailable"
+                lastError = "Audio input unavailable"
                 isListening = false
             }
             return
@@ -154,12 +176,14 @@ final class SpeechRecognizer {
 
             if error != nil {
                 DispatchQueue.main.async {
+                    guard self.sessionGeneration == currentGeneration else { return }
                     guard self.recognitionRequest != nil else { return }
                     if self.isListening && !self.sourceText.isEmpty && self.retryCount < self.maxRetries {
                         self.retryCount += 1
                         let delay = min(Double(self.retryCount) * 0.5, 1.5)
                         self.scheduleBeginRecognition(after: delay)
                     } else {
+                        self.lastError = error?.localizedDescription ?? "Speech recognition failed"
                         self.isListening = false
                     }
                 }
@@ -175,7 +199,7 @@ final class SpeechRecognizer {
                 retryCount += 1
                 scheduleBeginRecognition(after: 0.5)
             } else {
-                self.error = "Audio engine failed: \(error.localizedDescription)"
+                self.lastError = "Audio engine failed: \(error.localizedDescription)"
                 isListening = false
             }
         }
@@ -228,6 +252,7 @@ final class SpeechRecognizer {
                 for skip in 1...maxSpokenSkip where spokenCharacters[spokenIndex + skip] == sourceCharacter {
                     spokenIndex += skip
                     found = true
+                    lastGoodOriginalIndex = sourceIndex
                     break
                 }
             }
@@ -238,6 +263,7 @@ final class SpeechRecognizer {
                 for skip in 1...maxSourceSkip where sourceCharacters[sourceIndex + skip] == spokenCharacter {
                     sourceIndex += skip
                     found = true
+                    lastGoodOriginalIndex = sourceIndex
                     break
                 }
             }
@@ -245,7 +271,6 @@ final class SpeechRecognizer {
 
             sourceIndex += 1
             spokenIndex += 1
-            lastGoodOriginalIndex = sourceIndex
         }
 
         return lastGoodOriginalIndex

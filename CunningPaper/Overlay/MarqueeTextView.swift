@@ -1,6 +1,33 @@
 import AppKit
 import SwiftUI
 
+func visibleLineRange(
+    totalLines: Int,
+    lineHeight: CGFloat,
+    scrollOffset: CGFloat,
+    viewportHeight: CGFloat,
+    buffer: CGFloat,
+    activeLineIndex: Int?
+) -> Range<Int> {
+    guard totalLines > 0 else { return 0..<0 }
+    guard viewportHeight > 0 else { return 0..<totalLines }
+
+    var startLine = max(0, min(totalLines, Int(floor((-scrollOffset - buffer) / lineHeight))))
+    var endLine = max(startLine, min(totalLines, Int(ceil((viewportHeight - scrollOffset + buffer) / lineHeight))))
+
+    if let activeLineIndex {
+        let clampedActiveLine = max(0, min(totalLines - 1, activeLineIndex))
+        if clampedActiveLine < startLine {
+            startLine = clampedActiveLine
+        }
+        if clampedActiveLine >= endLine {
+            endLine = clampedActiveLine + 1
+        }
+    }
+
+    return startLine..<endLine
+}
+
 struct WordItem: Identifiable {
     let id: Int
     let word: String
@@ -63,9 +90,10 @@ struct SpeechScrollView: View {
                 viewportHeight: geometry.size.height
             )
             .onPreferenceChange(WordYPreferenceKey.self) { positions in
-                let wasEmpty = wordYPositions.isEmpty
+                let activeWord = activeWordIndex()
+                let previousActiveWordY = wordYPositions[activeWord]
                 wordYPositions = positions
-                if wasEmpty && !positions.isEmpty {
+                if let activeWordY = positions[activeWord], activeWordY != previousActiveWordY {
                     recalculateCenter(containerHeight: containerHeight)
                 }
             }
@@ -157,14 +185,18 @@ struct WordFlowLayout: View {
         let totalLines = lines.count
         let lineHeight = ceil(font.ascender - font.descender + font.leading) + lineSpacing
 
-        let canCull = viewportHeight > 0 && totalLines > 0
         let buffer: CGFloat = 400
-        let startLine = canCull
-            ? max(0, min(totalLines, Int(floor((-scrollOffset - buffer) / lineHeight))))
-            : 0
-        let endLine = canCull
-            ? max(startLine, min(totalLines, Int(ceil((viewportHeight - scrollOffset + buffer) / lineHeight))))
-            : totalLines
+        let activeLine = activeLineIndex(lines: lines, activeWordIndex: activeWordIndex(items: items))
+        let lineRange = visibleLineRange(
+            totalLines: totalLines,
+            lineHeight: lineHeight,
+            scrollOffset: scrollOffset,
+            viewportHeight: viewportHeight,
+            buffer: buffer,
+            activeLineIndex: activeLine
+        )
+        let startLine = lineRange.lowerBound
+        let endLine = lineRange.upperBound
 
         return VStack(alignment: .leading, spacing: lineSpacing) {
             if startLine > 0 {
@@ -196,6 +228,20 @@ struct WordFlowLayout: View {
             }
         }
         return -1
+    }
+
+    private func activeWordIndex(items: [WordItem]) -> Int {
+        let nextIndex = nextWordIndex(items: items)
+        if nextIndex >= 0 {
+            return nextIndex
+        }
+        return items.last(where: { !$0.isAnnotation })?.id ?? 0
+    }
+
+    private func activeLineIndex(lines: [[WordItem]], activeWordIndex: Int) -> Int? {
+        lines.firstIndex { line in
+            line.contains { $0.id == activeWordIndex }
+        }
     }
 
     @ViewBuilder

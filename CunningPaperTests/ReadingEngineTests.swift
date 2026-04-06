@@ -1,6 +1,23 @@
 import XCTest
 @testable import CunningPaper
 
+private final class FakeSpeechRecognizer: SpeechRecognizing {
+    var recognizedCharCount: Int = 0
+    var lastError: String?
+    var isFailed: Bool { lastError != nil }
+    var startReturnValue = true
+    var stopCallCount = 0
+
+    @discardableResult
+    func start(with text: String, language: String) -> Bool {
+        startReturnValue
+    }
+
+    func stop() {
+        stopCallCount += 1
+    }
+}
+
 final class ReadingEngineTests: XCTestCase {
 
     func testReadingModeAllCases() {
@@ -98,5 +115,45 @@ final class ReadingEngineTests: XCTestCase {
         XCTAssertFalse(engine.isActive)
         XCTAssertEqual(engine.fullText, "")
         XCTAssertEqual(engine.highlightedCharCount, 0)
+    }
+
+    func testVoiceTrackingStartFailureStopsEngineImmediately() {
+        let fakeRecognizer = FakeSpeechRecognizer()
+        fakeRecognizer.startReturnValue = false
+        fakeRecognizer.lastError = "Microphone access denied."
+        let engine = ReadingEngine(recognizerFactory: { fakeRecognizer })
+        let card = CardModel(body: "hello world")
+
+        engine.start(card: card, mode: .voiceTracking, language: "ko-KR")
+
+        XCTAssertFalse(engine.isActive)
+        XCTAssertEqual(fakeRecognizer.stopCallCount, 1)
+    }
+
+    func testVoiceTrackingStopsWhenRecognizerFailsDuringPolling() {
+        let fakeRecognizer = FakeSpeechRecognizer()
+        let engine = ReadingEngine(recognizerFactory: { fakeRecognizer })
+        let card = CardModel(body: "hello world")
+        let stopped = expectation(description: "engine stops after recognizer failure")
+
+        engine.start(card: card, mode: .voiceTracking, language: "ko-KR")
+        XCTAssertTrue(engine.isActive)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            fakeRecognizer.lastError = "Speech recognition failed"
+        }
+
+        func poll() {
+            if !engine.isActive {
+                stopped.fulfill()
+                return
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: poll)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: poll)
+
+        wait(for: [stopped], timeout: 1.0)
     }
 }
