@@ -40,7 +40,7 @@ Textream의 핵심 기능(Word Tracking, Classic Auto-scroll, MarqueeTextView)�
 
 ### 전체 데이터 흐름
 
-```
+```text
 CardModel ──text──▶ ReadingEngine ──highlightedCharCount──▶ MarqueeTextView
                          ▲
 HotkeyManager ──stop/advanceParagraph──▶ ReadingEngine

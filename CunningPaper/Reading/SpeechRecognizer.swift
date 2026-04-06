@@ -135,7 +135,7 @@ final class SpeechRecognizer {
         }
 
         inputNode.removeTap(onBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: nil) { buffer, _ in
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
             recognitionRequest.append(buffer)
         }
 
@@ -181,6 +181,7 @@ final class SpeechRecognizer {
         }
     }
 
+    /// Internal matching helper kept visible for tests via `@testable import`.
     func matchCharacters(spoken: String) {
         let charResult = charLevelMatch(spoken: spoken)
         let wordResult = wordLevelMatch(spoken: spoken)
@@ -191,6 +192,7 @@ final class SpeechRecognizer {
         }
     }
 
+    /// Internal matching helper kept visible for tests via `@testable import`.
     func charLevelMatch(spoken: String) -> Int {
         let remainingSource = String(sourceText.dropFirst(matchStartOffset))
         let sourceCharacters = Array(remainingSource.lowercased().unicodeScalars).map(Character.init)
@@ -249,6 +251,7 @@ final class SpeechRecognizer {
         return lastGoodOriginalIndex
     }
 
+    /// Internal matching helper kept visible for tests via `@testable import`.
     func wordLevelMatch(spoken: String) -> Int {
         let remainingSource = String(sourceText.dropFirst(matchStartOffset))
         let sourceWords = remainingSource.split(separator: " ").map(String.init)
@@ -259,7 +262,7 @@ final class SpeechRecognizer {
         var matchedCharacterCount = 0
 
         while sourceIndex < sourceWords.count && spokenIndex < spokenWords.count {
-            if Self.isAnnotationWord(sourceWords[sourceIndex]) {
+            if isAnnotationWord(sourceWords[sourceIndex]) {
                 matchedCharacterCount += sourceWords[sourceIndex].count
                 if sourceIndex < sourceWords.count - 1 {
                     matchedCharacterCount += 1
@@ -324,7 +327,7 @@ final class SpeechRecognizer {
             spokenIndex += 1
         }
 
-        while sourceIndex < sourceWords.count && Self.isAnnotationWord(sourceWords[sourceIndex]) {
+        while sourceIndex < sourceWords.count && isAnnotationWord(sourceWords[sourceIndex]) {
             matchedCharacterCount += sourceWords[sourceIndex].count
             if sourceIndex < sourceWords.count - 1 {
                 matchedCharacterCount += 1
@@ -335,6 +338,7 @@ final class SpeechRecognizer {
         return matchedCharacterCount
     }
 
+    /// Internal matching helper kept visible for tests via `@testable import`.
     func isFuzzyMatch(_ a: String, _ b: String) -> Bool {
         if a.isEmpty || b.isEmpty { return false }
         if a == b { return true }
@@ -358,16 +362,16 @@ final class SpeechRecognizer {
     }
 
     private func editDistance(_ a: String, _ b: String) -> Int {
-        let a = Array(a)
-        let b = Array(b)
-        var dp = Array(0...b.count)
+        let sourceCharacters = Array(a)
+        let targetCharacters = Array(b)
+        var dp = Array(0...targetCharacters.count)
 
-        for i in 1...a.count {
+        for i in 1...sourceCharacters.count {
             var previous = dp[0]
             dp[0] = i
-            for j in 1...b.count {
+            for j in 1...targetCharacters.count {
                 let current = dp[j]
-                if a[i - 1] == b[j - 1] {
+                if sourceCharacters[i - 1] == targetCharacters[j - 1] {
                     dp[j] = previous
                 } else {
                     dp[j] = min(previous, dp[j], dp[j - 1]) + 1
@@ -376,7 +380,7 @@ final class SpeechRecognizer {
             }
         }
 
-        return dp[b.count]
+        return dp[targetCharacters.count]
     }
 
 }

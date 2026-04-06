@@ -97,6 +97,8 @@ struct PreferencesView: View {
                                 .pickerStyle(.segmented)
                                 .frame(width: 280)
                                 .labelsHidden()
+                                .accessibilityLabel("Reading Mode")
+                                .accessibilityHint("Choose how the overlay advances while reading.")
                             }
                             .padding(.horizontal, 18)
                             .padding(.vertical, 16)
@@ -147,6 +149,8 @@ struct PreferencesView: View {
                                 }
                                 .frame(width: 200)
                                 .labelsHidden()
+                                .accessibilityLabel("Recognition Language")
+                                .accessibilityHint("Choose the language used for speech recognition.")
                             }
                             .padding(.horizontal, 18)
                             .padding(.vertical, 16)

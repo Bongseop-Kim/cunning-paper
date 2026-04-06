@@ -59,6 +59,10 @@ final class SpeechRecognizerTests: XCTestCase {
         let sr = SpeechRecognizer()
         sr.prepareForTesting(text: "[pause] hello world")
         let result = sr.wordLevelMatch(spoken: "hello world")
-        XCTAssertGreaterThan(result, 0)
+        XCTAssertEqual(result, 19)
+    }
+
+    func testIsAnnotationWordEmptyStringIsFalse() {
+        XCTAssertFalse(isAnnotationWord(""))
     }
 }

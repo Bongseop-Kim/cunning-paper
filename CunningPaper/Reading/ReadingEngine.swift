@@ -22,6 +22,12 @@ final class ReadingEngine {
         paragraphOffsets = offsets
         currentParagraphIndex = 0
         highlightedCharCount = 0
+
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            isActive = false
+            return
+        }
+
         isActive = true
 
         switch mode {
@@ -61,6 +67,15 @@ final class ReadingEngine {
     }
 
     private func startAutoScroll(speed: Double) {
+        guard speed > 0, !fullText.isEmpty else {
+            scrollTimer?.invalidate()
+            scrollTimer = nil
+            fractionalChars = 0
+            highlightedCharCount = 0
+            isActive = false
+            return
+        }
+
         let interval = 1.0 / 30.0
         fractionalChars = 0
         scrollTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
@@ -79,6 +94,15 @@ final class ReadingEngine {
     }
 
     private func startVoiceTracking(language: String) {
+        guard !fullText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            speechRecognizer?.stop()
+            speechRecognizer = nil
+            pollingTimer?.invalidate()
+            pollingTimer = nil
+            isActive = false
+            return
+        }
+
         let recognizer = SpeechRecognizer()
         speechRecognizer = recognizer
         recognizer.start(with: fullText, language: language)

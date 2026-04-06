@@ -48,6 +48,7 @@ func splitTextIntoWords(_ text: String) -> [String] {
 }
 
 func isAnnotationWord(_ word: String) -> Bool {
+    if word.isEmpty { return false }
     if word.hasPrefix("[") && word.hasSuffix("]") { return true }
     return word.filter { $0.isLetter || $0.isNumber }.isEmpty
 }

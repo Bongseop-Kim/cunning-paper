@@ -150,12 +150,9 @@ struct WordFlowLayout: View {
         return intrinsicHeight / font.pointSize > 1.5 ? 2 : 8
     }
 
-    private static var cacheKey = ""
-    private static var cachedItems: [WordItem] = []
-    private static var cachedLines: [[WordItem]] = []
-
     var body: some View {
-        let (items, lines) = cachedLayout()
+        let items = buildItems()
+        let lines = buildLines(items: items)
         let nextIndex = nextWordIndex(items: items)
         let totalLines = lines.count
         let lineHeight = ceil(font.ascender - font.descender + font.leading) + lineSpacing
@@ -190,20 +187,6 @@ struct WordFlowLayout: View {
         .coordinateSpace(name: "flowLayout")
     }
 
-    private func cachedLayout() -> ([WordItem], [[WordItem]]) {
-        let key = "\(words.count)|\(words.first ?? "")|\(words.last ?? "")|\(font.pointSize)|\(Int(containerWidth))"
-        if key == Self.cacheKey {
-            return (Self.cachedItems, Self.cachedLines)
-        }
-
-        let items = buildItems()
-        let lines = buildLines(items: items)
-        Self.cacheKey = key
-        Self.cachedItems = items
-        Self.cachedLines = lines
-        return (items, lines)
-    }
-
     private func nextWordIndex(items: [WordItem]) -> Int {
         for item in items where !item.isAnnotation {
             let charsIntoWord = highlightedCharCount - item.charOffset
@@ -215,6 +198,7 @@ struct WordFlowLayout: View {
         return -1
     }
 
+    @ViewBuilder
     private func wordView(for item: WordItem, isNextWord: Bool) -> some View {
         let charsIntoWord = highlightedCharCount - item.charOffset
         let litCount = max(0, min(item.word.count, charsIntoWord))
@@ -225,24 +209,20 @@ struct WordFlowLayout: View {
             let annotationColor = isFullyLit
                 ? cueColor.opacity(cueReadOpacity)
                 : cueColor.opacity(cueUnreadOpacity)
-            return AnyView(
-                Text(item.word + " ")
-                    .font(Font(font).italic())
-                    .foregroundStyle(annotationColor)
-                    .background(yReporter(for: item.id))
-            )
-        }
+            Text(item.word + " ")
+                .font(Font(font).italic())
+                .foregroundStyle(annotationColor)
+                .background(yReporter(for: item.id))
+        } else {
+            let dimColor = isCurrentWord ? highlightColor.opacity(0.6) : highlightColor
+            let wordColor = isFullyLit ? highlightColor.opacity(0.3) : dimColor
 
-        let dimColor = isCurrentWord ? highlightColor.opacity(0.6) : highlightColor
-        let wordColor = isFullyLit ? highlightColor.opacity(0.3) : dimColor
-
-        return AnyView(
             Text(item.word + " ")
                 .font(Font(font))
                 .foregroundStyle(wordColor)
                 .underline(isCurrentWord, color: wordColor)
                 .background(yReporter(for: item.id))
-        )
+        }
     }
 
     private func yReporter(for id: Int) -> some View {

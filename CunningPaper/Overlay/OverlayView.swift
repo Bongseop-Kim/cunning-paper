@@ -52,6 +52,15 @@ struct OverlayView: View {
         .onDisappear {
             engine.stop()
         }
+        .onChange(of: prefs?.readingMode) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: prefs?.autoScrollSpeed) { _, _ in
+            restartEngine()
+        }
+        .onChange(of: prefs?.speechLanguage) { _, _ in
+            restartEngine()
+        }
         .onChange(of: activePanel) { _, panel in
             updateClickThrough(for: panel)
         }
@@ -79,10 +88,14 @@ struct OverlayView: View {
         case .nextLine:
             if prefs?.readingMode == .manual {
                 engine.advanceParagraph()
+            } else {
+                provideUnsupportedHotkeyFeedback()
             }
         case .prevLine:
             if prefs?.readingMode == .manual {
                 engine.retractParagraph()
+            } else {
+                provideUnsupportedHotkeyFeedback()
             }
         case .stop:
             engine.stop()
@@ -108,5 +121,9 @@ struct OverlayView: View {
     private func updateClickThrough(for panel: ActivePanel) {
         guard let overlayWindow = NSApp.windows.first(where: { $0 is OverlayPanel }) else { return }
         overlayWindow.ignoresMouseEvents = (panel == .none)
+    }
+
+    private func provideUnsupportedHotkeyFeedback() {
+        NSSound.beep()
     }
 }

@@ -24,7 +24,9 @@ final class ReadingEngineTests: XCTestCase {
 
     func testEngineStopResetsState() {
         let engine = ReadingEngine()
-        engine.simulateActive(text: "hello world", charCount: 5)
+        let card = CardModel(body: "hello world")
+        engine.start(card: card, mode: .manual)
+        engine.advanceParagraph()
         engine.stop()
         XCTAssertFalse(engine.isActive)
         XCTAssertEqual(engine.highlightedCharCount, 0)
@@ -32,14 +34,16 @@ final class ReadingEngineTests: XCTestCase {
 
     func testManualAdvanceParagraph() {
         let engine = ReadingEngine()
-        engine.simulateManual(paragraphOffsets: [0, 12], total: "Hello world Goodbye world")
+        let card = CardModel(body: "Hello world\nGoodbye world")
+        engine.start(card: card, mode: .manual)
         engine.advanceParagraph()
         XCTAssertEqual(engine.highlightedCharCount, 12)
     }
 
     func testManualRetractParagraph() {
         let engine = ReadingEngine()
-        engine.simulateManual(paragraphOffsets: [0, 12], total: "Hello world Goodbye world")
+        let card = CardModel(body: "Hello world\nGoodbye world")
+        engine.start(card: card, mode: .manual)
         engine.advanceParagraph()
         engine.retractParagraph()
         XCTAssertEqual(engine.highlightedCharCount, 0)
@@ -47,15 +51,52 @@ final class ReadingEngineTests: XCTestCase {
 
     func testAutoScrollIncreasesCharCount() {
         let engine = ReadingEngine()
-        engine.simulateAutoScroll(text: "hello world this is a test")
+        let card = CardModel(body: "hello world this is a test")
+        engine.start(card: card, mode: .autoScroll, speed: 10)
 
         let expectation = XCTestExpectation(description: "charCount increases")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            XCTAssertGreaterThan(engine.highlightedCharCount, 0)
-            engine.stop()
-            expectation.fulfill()
+        let deadline = Date().addingTimeInterval(2.0)
+
+        func poll() {
+            if engine.highlightedCharCount > 0 {
+                engine.stop()
+                expectation.fulfill()
+                return
+            }
+
+            if Date() >= deadline {
+                engine.stop()
+                XCTFail("Expected auto-scroll to advance highlighted characters before timeout.")
+                expectation.fulfill()
+                return
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: poll)
         }
 
-        wait(for: [expectation], timeout: 2.0)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: poll)
+
+        wait(for: [expectation], timeout: 2.5)
+    }
+
+    func testAutoScrollWithInvalidSpeedDoesNotActivateEngine() {
+        let engine = ReadingEngine()
+        let card = CardModel(body: "hello world")
+
+        engine.start(card: card, mode: .autoScroll, speed: 0)
+
+        XCTAssertFalse(engine.isActive)
+        XCTAssertEqual(engine.highlightedCharCount, 0)
+    }
+
+    func testVoiceTrackingWithEmptyCardDoesNotActivateEngine() {
+        let engine = ReadingEngine()
+        let card = CardModel(body: "   \n  ")
+
+        engine.start(card: card, mode: .voiceTracking, language: "ko-KR")
+
+        XCTAssertFalse(engine.isActive)
+        XCTAssertEqual(engine.fullText, "")
+        XCTAssertEqual(engine.highlightedCharCount, 0)
     }
 }
